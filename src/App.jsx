@@ -980,6 +980,22 @@ export default function App() {
         .step p { font-size: 15px; line-height: 1.55; color: #4A5048; margin: 0; }
 
         /* TRUST band */
+        /* PAYMENT NOTE */
+        .payment-note {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+          background: var(--stone);
+          border-radius: 14px;
+          padding: 20px 24px;
+          margin-top: 40px;
+          font-size: 15px;
+          line-height: 1.6;
+          color: #4A5048;
+        }
+        .payment-note-icon { font-size: 20px; margin-top: 2px; }
+        .payment-note strong { color: var(--ink); }
+
         .trust {
           background: var(--stone);
         }
@@ -1174,15 +1190,16 @@ export default function App() {
         <Reveal>
           <div className="section-head">
             <span className="section-eyebrow">How it works</span>
-            <h2>Set it once. It runs itself.</h2>
+            <h2>Good homes don't happen. They're tended to.</h2>
+            <p className="section-sub">The average Kiwi homeowner spends $3,000–$5,000 a year on home maintenance — most of it unplanned, reactive, and more expensive than it needed to be. HomeTend changes that.</p>
           </div>
         </Reveal>
         <div className="steps">
           {[
-            { t: 'Pick your plan', d: 'Choose your services. We place each one in the season it actually belongs to.' },
-            { t: 'It\'s billed evenly', d: 'One flat fee every month, all year — not a lump sum twice a year.' },
-            { t: 'We schedule by season', d: 'Visits land when your home needs them — gutters before storms, windows in spring.' },
-            { t: 'You get proof', d: 'A photo and a short note land in your inbox the moment each visit\'s done.' },
+            { t: 'Build your plan', d: 'Select the services your home needs and how often. Your monthly cost updates instantly — no quotes, no phone calls.' },
+            { t: 'Sign your Service Agreement', d: 'Takes two minutes. No surprises in the fine print. A 50% deposit secures your plan, with the balance spread across equal monthly payments for year one.' },
+            { t: 'We schedule your visits', d: 'Your crew books in and texts you the date. Visits land when your home actually needs them — gutters before the storms, windows in spring.' },
+            { t: 'Proof, every time', d: 'A photo and a short note land in your inbox the moment each visit is done. If we notice anything else worth flagging, we will.' },
           ].map((s, i) => (
             <Reveal key={s.t} delay={i * 90}>
               <div className="step">
@@ -1193,6 +1210,14 @@ export default function App() {
             </Reveal>
           ))}
         </div>
+        <Reveal>
+          <div className="payment-note">
+            <span className="payment-note-icon">💳</span>
+            <div>
+              <strong>Year one:</strong> 50% on sign-up, the balance across equal monthly payments. <strong>From year two:</strong> one simple monthly direct debit — same amount, every month.
+            </div>
+          </div>
+        </Reveal>
       </section>
 
       {/* TRUST */}

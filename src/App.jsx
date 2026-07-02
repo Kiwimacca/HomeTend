@@ -691,8 +691,8 @@ export default function App() {
         }
         .fold-inputs {
           display: flex;
-          gap: 32px;
-          margin-bottom: 24px;
+          gap: 24px;
+          margin-bottom: 16px;
           flex-wrap: wrap;
         }
         .fold-input-group label {
@@ -707,11 +707,16 @@ export default function App() {
         .fold-services {
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: 0;
+        }
+        @keyframes pulse-ring {
+          0% { box-shadow: 0 0 0 0 rgba(181,96,63,0.45); }
+          70% { box-shadow: 0 0 0 7px rgba(181,96,63,0); }
+          100% { box-shadow: 0 0 0 0 rgba(181,96,63,0); }
         }
         .fold-service-row {
-          border-radius: 12px;
-          padding: 10px 14px;
+          border-radius: 10px;
+          padding: 6px 10px;
           transition: background 0.15s;
         }
         .fold-service-row.active {
@@ -720,7 +725,7 @@ export default function App() {
         .fold-service-toggle {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
           background: none;
           border: none;
           cursor: pointer;
@@ -729,26 +734,28 @@ export default function App() {
           padding: 0;
         }
         .fold-check {
-          width: 22px;
-          height: 22px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
-          border: 1.5px solid var(--line);
+          border: 1.5px solid var(--clay);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
           flex-shrink: 0;
           transition: all 0.15s;
-          color: #8A8576;
+          color: var(--clay);
+          animation: pulse-ring 2s ease-out infinite;
         }
         .fold-check.checked {
           background: var(--clay);
           border-color: var(--clay);
           color: white;
+          animation: none;
         }
         .fold-service-name {
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 500;
           color: var(--ink);
         }
@@ -756,15 +763,15 @@ export default function App() {
           display: flex;
           gap: 6px;
           flex-wrap: wrap;
-          margin-top: 10px;
-          margin-left: 34px;
+          margin-top: 6px;
+          margin-left: 30px;
         }
         .fold-addon {
           display: flex;
           align-items: center;
           gap: 6px;
-          margin-top: 8px;
-          margin-left: 34px;
+          margin-top: 5px;
+          margin-left: 30px;
           font-size: 12px;
           color: #8A8576;
           font-weight: 600;

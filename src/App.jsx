@@ -34,10 +34,30 @@ function allowedFrequencies(serviceId) {
 // gutter $100-300, windows (ext) $50-110, driveway $150-350, HVAC $80-200/unit,
 // spa pool $120-250+, spider control $99-150.
 const SIZE_BANDS = [
-  { id: 'small', label: 'Small', hint: 'Apartment / townhouse, up to ~2 bedrooms', multiplier: 0.8 },
-  { id: 'medium', label: 'Medium', hint: 'Standalone home, 3 bedrooms', multiplier: 1.0 },
-  { id: 'large', label: 'Large', hint: '4+ bedrooms, or a larger section', multiplier: 1.3 },
+  { id: 'small', label: 'Small', hint: 'Compact home or townhouse', multiplier: 0.8 },
+  { id: 'medium', label: 'Medium', hint: 'Average standalone home', multiplier: 1.0 },
+  { id: 'large', label: 'Large', hint: 'Larger home or bigger section', multiplier: 1.3 },
 ];
+
+const BEDROOM_BANDS = [
+  { id: '1-2', label: '1–2', multiplier: 0.85 },
+  { id: '3', label: '3', multiplier: 1.0 },
+  { id: '4+', label: '4+', multiplier: 1.2 },
+];
+
+// Per-service bedroom sensitivity — how much bedroom count shifts the price.
+// Services tied to interior/window count are more bedroom-sensitive than
+// exterior footprint services (roof, driveway) which are more size-sensitive.
+const BEDROOM_SENSITIVITY = {
+  'house-wash': 0.3,
+  'roof': 0.2,
+  'gutter': 0.2,
+  'windows': 0.7,
+  'driveway': 0.2,
+  'hvac': 0.6,
+  'spa': 0.0,
+  'spider': 0.4,
+};
 
 // Rate per single visit/year (monthly-equivalent, with premium applied).
 // Multiplied by however many visits/year the customer chooses.
@@ -58,8 +78,9 @@ function isExterior(id) {
   return ['house-wash', 'roof', 'gutter', 'windows', 'driveway', 'spider'].includes(id);
 }
 
-function calculateQuote({ selected, sizeBand, storeys, hvacOutlets, spaSize, frequencyByService }) {
+function calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, spaSize, frequencyByService }) {
   const band = SIZE_BANDS.find((b) => b.id === sizeBand) || SIZE_BANDS[1];
+  const bedroomBand = BEDROOM_BANDS.find((b) => b.id === bedrooms) || BEDROOM_BANDS[1];
   let total = 0;
   const breakdown = [];
 
@@ -69,7 +90,11 @@ function calculateQuote({ selected, sizeBand, storeys, hvacOutlets, spaSize, fre
     const freq = FREQUENCIES.find((f) => f.id === freqId) || FREQUENCIES[0];
     const visitCount = freq.visitsPerYear;
 
-    let line = rate * visitCount * band.multiplier;
+    // Blend size and bedroom multipliers weighted by per-service sensitivity
+    const sens = BEDROOM_SENSITIVITY[id] ?? 0.3;
+    const blendedMultiplier = band.multiplier * (1 - sens) + (band.multiplier * bedroomBand.multiplier) * sens;
+
+    let line = rate * visitCount * blendedMultiplier;
 
     if (isExterior(id) && storeys >= 2) {
       line += STOREY_SURCHARGE[storeys] || 0;
@@ -90,11 +115,7 @@ function calculateQuote({ selected, sizeBand, storeys, hvacOutlets, spaSize, fre
     total += line;
   });
 
-  // base callout/admin component once any service is selected
-  const calloutBase = selected.size > 0 ? 12 : 0;
-  total += calloutBase;
-
-  return { total: Math.round(total), breakdown, calloutBase };
+  return { total: Math.round(total), breakdown };
 }
 
 function useReveal() {
@@ -246,6 +267,7 @@ export default function App() {
   const [selected, setSelected] = useState(new Set(['roof', 'gutter', 'house-wash']));
   const [scrolled, setScrolled] = useState(false);
   const [sizeBand, setSizeBand] = useState('medium');
+  const [bedrooms, setBedrooms] = useState('3');
   const [storeys, setStoreys] = useState(1);
   const [hvacOutlets, setHvacOutlets] = useState(1);
   const [spaSize, setSpaSize] = useState('medium');
@@ -283,7 +305,7 @@ export default function App() {
     setFrequencyByService((m) => ({ ...m, [id]: freqId }));
   };
 
-  const quote = calculateQuote({ selected, sizeBand, storeys, hvacOutlets, spaSize, frequencyByService });
+  const quote = calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, spaSize, frequencyByService });
   const total = quote.total;
   const hasHvac = selected.has('hvac');
   const hasSpa = selected.has('spa');
@@ -1019,7 +1041,7 @@ export default function App() {
       <section className="above-fold">
         {/* Left: headline + configurator */}
         <div className="fold-left">
-          <h1 className="fold-headline">Your home, looked after.<br/><em>Every season.</em></h1>
+          <h1 className="fold-headline">Your biggest asset,<br/><em>let us tend to your maintenance needs.</em></h1>
 
           {/* Property inputs */}
           <div className="fold-inputs">
@@ -1031,6 +1053,17 @@ export default function App() {
                     className={`pill ${sizeBand === b.id ? 'active' : ''}`}
                     onClick={() => setSizeBand(b.id)}
                     title={b.hint}
+                  >{b.label}</button>
+                ))}
+              </div>
+            </div>
+            <div className="fold-input-group">
+              <label>Bedrooms</label>
+              <div className="pill-group">
+                {BEDROOM_BANDS.map((b) => (
+                  <button key={b.id} type="button"
+                    className={`pill ${bedrooms === b.id ? 'active' : ''}`}
+                    onClick={() => setBedrooms(b.id)}
                   >{b.label}</button>
                 ))}
               </div>
@@ -1120,9 +1153,6 @@ export default function App() {
                   </li>
                 );
               })}
-              {quote.calloutBase > 0 && (
-                <li><span>Plan fee</span><span>${quote.calloutBase}</span></li>
-              )}
               {selected.size === 0 && (
                 <li className="fold-price-empty">Select services to see your quote</li>
               )}

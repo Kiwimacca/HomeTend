@@ -648,6 +648,159 @@ export default function App() {
           margin: 0;
         }
 
+        /* ABOVE FOLD */
+        .above-fold {
+          display: grid;
+          grid-template-columns: 1fr 340px;
+          gap: 40px;
+          padding: 40px 6vw 60px;
+          max-width: 1320px;
+          margin: 0 auto;
+          align-items: start;
+        }
+        .fold-headline {
+          font-size: clamp(28px, 4vw, 44px);
+          line-height: 1.1;
+          margin: 0 0 28px;
+        }
+        .fold-headline em {
+          font-style: italic;
+          color: var(--clay);
+        }
+        .fold-inputs {
+          display: flex;
+          gap: 32px;
+          margin-bottom: 24px;
+          flex-wrap: wrap;
+        }
+        .fold-input-group label {
+          display: block;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          color: #8A8576;
+          margin-bottom: 8px;
+        }
+        .fold-services {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .fold-service-row {
+          border-radius: 12px;
+          padding: 10px 14px;
+          transition: background 0.15s;
+        }
+        .fold-service-row.active {
+          background: #FBF1EC;
+        }
+        .fold-service-toggle {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          width: 100%;
+          text-align: left;
+          padding: 0;
+        }
+        .fold-check {
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          border: 1.5px solid var(--line);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          font-weight: 700;
+          flex-shrink: 0;
+          transition: all 0.15s;
+          color: #8A8576;
+        }
+        .fold-check.checked {
+          background: var(--clay);
+          border-color: var(--clay);
+          color: white;
+        }
+        .fold-service-name {
+          font-size: 15px;
+          font-weight: 500;
+          color: var(--ink);
+        }
+        .fold-freq-pills {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+          margin-top: 10px;
+          margin-left: 34px;
+        }
+        .fold-addon {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-top: 8px;
+          margin-left: 34px;
+          font-size: 12px;
+          color: #8A8576;
+          font-weight: 600;
+        }
+
+        /* FOLD PRICE CARD */
+        .fold-right {
+          position: sticky;
+          top: 80px;
+        }
+        .fold-price-card {
+          background: var(--ink);
+          color: var(--paper);
+          border-radius: 22px;
+          padding: 32px 28px;
+          box-shadow: 0 20px 60px -24px rgba(38,48,42,0.35);
+        }
+        .fold-price-label {
+          font-size: 12px;
+          opacity: 0.6;
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          display: block;
+        }
+        .fold-price-amount {
+          font-family: 'Fraunces', serif;
+          font-size: 52px;
+          margin: 8px 0 4px;
+          line-height: 1;
+        }
+        .fold-price-amount span { font-size: 16px; opacity: 0.65; }
+        .fold-price-note {
+          font-size: 12px;
+          opacity: 0.55;
+          margin-bottom: 20px;
+        }
+        .fold-price-list {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 4px;
+          border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .fold-price-list li {
+          display: flex;
+          justify-content: space-between;
+          padding: 9px 0;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          font-size: 13px;
+        }
+        .fold-price-freq { opacity: 0.5; font-size: 12px; }
+        .fold-price-empty { opacity: 0.5; justify-content: center !important; }
+
+        @media (max-width: 900px) {
+          .above-fold { grid-template-columns: 1fr; }
+          .fold-right { position: static; }
+        }
+
         /* PROPERTY FORM */
         .property-form {
           display: grid;
@@ -856,241 +1009,126 @@ export default function App() {
       <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-logo">HomeTend.</div>
         <ul className="nav-links">
-          <li>Services</li>
           <li>How it works</li>
-          <li>Pricing</li>
           <li>About</li>
         </ul>
         <button className="nav-cta">Get started</button>
       </nav>
 
-      {/* HERO */}
-      <section className="hero">
-        <Reveal>
-          <span className="hero-eyebrow">Your home, tended to on its own seasons</span>
-          <h1>Your home is your biggest asset. <em>It deserves tending to.</em></h1>
-          <p className="hero-sub">
-            Choose what your home needs and which seasons it happens in. One flat monthly fee, smoothed evenly across the year — updates instantly as you build your plan below.
-          </p>
-          <div className="hero-ctas">
-            <button className="btn-primary">Build your plan</button>
-            <button className="btn-secondary">See how it works →</button>
+      {/* ABOVE-FOLD PRODUCT SECTION */}
+      <section className="above-fold">
+        {/* Left: headline + configurator */}
+        <div className="fold-left">
+          <h1 className="fold-headline">Your home, looked after.<br/><em>Every season.</em></h1>
+
+          {/* Property inputs */}
+          <div className="fold-inputs">
+            <div className="fold-input-group">
+              <label>Property size</label>
+              <div className="pill-group">
+                {SIZE_BANDS.map((b) => (
+                  <button key={b.id} type="button"
+                    className={`pill ${sizeBand === b.id ? 'active' : ''}`}
+                    onClick={() => setSizeBand(b.id)}
+                    title={b.hint}
+                  >{b.label}</button>
+                ))}
+              </div>
+            </div>
+            <div className="fold-input-group">
+              <label>Storeys</label>
+              <div className="pill-group">
+                {[1,2,3].map((n) => (
+                  <button key={n} type="button"
+                    className={`pill ${storeys === n ? 'active' : ''}`}
+                    onClick={() => setStoreys(n)}
+                  >{n}{n===3?'+':''}</button>
+                ))}
+              </div>
+            </div>
           </div>
-        </Reveal>
-        <Reveal delay={150}>
-          <div className="hero-price-card">
-            <span className="hero-price-label">Your monthly plan, live</span>
-            <div className="hero-price-amount">${total}<span> / mo</span></div>
-            <div className="hero-price-services">
-              {[...selected].length === 0 && (
-                <span className="hero-price-empty">Pick services below to see your price</span>
-              )}
-              {[...selected].map((id) => {
+
+          {/* Service list */}
+          <div className="fold-services">
+            {SERVICES.map((s) => {
+              const isActive = selected.has(s.id);
+              const allowed = allowedFrequencies(s.id);
+              const currentFreq = frequencyByService[s.id] || 'annual';
+              return (
+                <div key={s.id} className={`fold-service-row ${isActive ? 'active' : ''}`}>
+                  <button
+                    type="button"
+                    className="fold-service-toggle"
+                    onClick={() => toggle(s.id)}
+                  >
+                    <span className={`fold-check ${isActive ? 'checked' : ''}`}>{isActive ? '✓' : '+'}</span>
+                    <span className="fold-service-name">{s.name}</span>
+                  </button>
+                  {isActive && (
+                    <div className="fold-freq-pills">
+                      {allowed.map((f) => (
+                        <button key={f.id} type="button"
+                          className={`mini-pill ${currentFreq === f.id ? 'active' : ''}`}
+                          onClick={() => setFrequency(s.id, f.id)}
+                        >{f.label}</button>
+                      ))}
+                    </div>
+                  )}
+                  {isActive && s.id === 'hvac' && (
+                    <div className="fold-addon">
+                      <span>Units:</span>
+                      {[1,2,3,4].map((n) => (
+                        <button key={n} type="button"
+                          className={`mini-pill ${hvacOutlets === n ? 'active' : ''}`}
+                          onClick={() => setHvacOutlets(n)}
+                        >{n}{n===4?'+':''}</button>
+                      ))}
+                    </div>
+                  )}
+                  {isActive && s.id === 'spa' && (
+                    <div className="fold-addon">
+                      <span>Spa size:</span>
+                      {['small','medium','large'].map((sz) => (
+                        <button key={sz} type="button"
+                          className={`mini-pill ${spaSize === sz ? 'active' : ''}`}
+                          onClick={() => setSpaSize(sz)}
+                        >{sz.charAt(0).toUpperCase()+sz.slice(1)}</button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right: live price */}
+        <div className="fold-right">
+          <div className="fold-price-card">
+            <span className="fold-price-label">Your monthly plan</span>
+            <div className="fold-price-amount">${total}<span> /mo</span></div>
+            <div className="fold-price-note">Billed monthly · visits scheduled seasonally</div>
+            <ul className="fold-price-list">
+              {quote.breakdown.map(({ id, amount }) => {
                 const s = SERVICES.find((sv) => sv.id === id);
                 const freqId = frequencyByService[id] || 'annual';
                 const freq = FREQUENCIES.find((f) => f.id === freqId);
                 return (
-                  <span key={id} className="hero-price-chip">
-                    {s?.name} <span className="hero-price-chip-count">{freq?.label}</span>
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      {/* TICKER */}
-      <div className="ticker-wrap">
-        <div className="ticker">
-          {Array(2).fill(0).map((_, i) => (
-            <React.Fragment key={i}>
-              <span>HOUSE WASH</span>
-              <span>·</span>
-              <span>ROOF & MOULD</span>
-              <span>·</span>
-              <span>GUTTERS</span>
-              <span>·</span>
-              <span>HVAC</span>
-              <span>·</span>
-              <span>WINDOWS</span>
-              <span>·</span>
-              <span>DRIVEWAY</span>
-              <span>·</span>
-              <span>SPA POOL</span>
-              <span>·</span>
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-
-      {/* FELT PROBLEM */}
-      <section className="section">
-        <Reveal>
-          <div className="section-head">
-            <span className="section-eyebrow">Why this exists</span>
-            <h2>Your home holds its value when it's looked after consistently — not fixed up occasionally.</h2>
-          </div>
-        </Reveal>
-        <div className="felt-grid">
-          {[
-            { n: '01', t: 'A home that\'s tended to, season after season, simply holds its value better than one that isn\'t.' },
-            { n: '02', t: 'Most home services are one-off and reactive — called in only once something\'s already gone wrong.' },
-            { n: '03', t: 'One flat monthly plan, smoothed across the year — the work happens on your home\'s schedule, not an arbitrary one.' },
-          ].map((c, i) => (
-            <Reveal key={c.n} delay={i * 100}>
-              <div className="felt-card">
-                <span className="num">{c.n}</span>
-                <p>{c.t}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* SERVICE PICKER */}
-      <section className="section" id="services">
-        <Reveal>
-          <div className="section-head">
-            <span className="section-eyebrow">Build your plan</span>
-            <h2>Choose your services. Choose your seasons.</h2>
-            <p className="section-sub">Most services run twice a year — pick which two seasons suit your home. Add a third or fourth if you'd rather it happen more often.</p>
-          </div>
-        </Reveal>
-
-        <Reveal>
-          <div className="property-form">
-            <div className="property-field">
-              <label>Property size</label>
-              <div className="pill-group">
-                {SIZE_BANDS.map((b) => (
-                  <button
-                    key={b.id}
-                    type="button"
-                    className={`pill ${sizeBand === b.id ? 'active' : ''}`}
-                    onClick={() => setSizeBand(b.id)}
-                  >
-                    {b.label}
-                  </button>
-                ))}
-              </div>
-              <span className="property-hint">{SIZE_BANDS.find((b) => b.id === sizeBand)?.hint}</span>
-            </div>
-            <div className="property-field">
-              <label>Storeys</label>
-              <div className="pill-group">
-                {[1, 2, 3].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    className={`pill ${storeys === n ? 'active' : ''}`}
-                    onClick={() => setStoreys(n)}
-                  >
-                    {n}{n === 3 ? '+' : ''}
-                  </button>
-                ))}
-              </div>
-              <span className="property-hint">Taller homes take a little longer to work on safely.</span>
-            </div>
-            {hasHvac && (
-              <div className="property-field">
-                <label>HVAC outlets / units</label>
-                <div className="pill-group">
-                  {[1, 2, 3, 4].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      className={`pill ${hvacOutlets === n ? 'active' : ''}`}
-                      onClick={() => setHvacOutlets(n)}
-                    >
-                      {n}{n === 4 ? '+' : ''}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-            {hasSpa && (
-              <div className="property-field">
-                <label>Spa pool size</label>
-                <div className="pill-group">
-                  {[{ id: 'small', l: 'Small' }, { id: 'medium', l: 'Medium' }, { id: 'large', l: 'Large' }].map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      className={`pill ${spaSize === s.id ? 'active' : ''}`}
-                      onClick={() => setSpaSize(s.id)}
-                    >
-                      {s.l}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </Reveal>
-
-        <div className="picker">
-          <Reveal>
-            <span className="picker-label">All services — tap to add, then choose how often</span>
-            <div className="service-grid">
-              {SERVICES.map((s) => {
-                const isActive = selected.has(s.id);
-                const allowed = allowedFrequencies(s.id);
-                const currentFreq = frequencyByService[s.id] || 'annual';
-                return (
-                  <div
-                    key={s.id}
-                    className={`service-card ${isActive ? 'active' : ''}`}
-                  >
-                    <div onClick={() => toggle(s.id)} style={{ cursor: 'pointer' }}>
-                      <span className="tag">Up to {allowed[allowed.length - 1].label.toLowerCase()}</span>
-                      <div className="name">{s.name}</div>
-                      <div className="check">{isActive ? '✓' : ''}</div>
-                    </div>
-                    {isActive && (
-                      <div className="card-season-pills" onClick={(e) => e.stopPropagation()}>
-                        {allowed.map((f) => (
-                          <button
-                            key={f.id}
-                            type="button"
-                            className={`mini-pill ${currentFreq === f.id ? 'active' : ''}`}
-                            onClick={() => setFrequency(s.id, f.id)}
-                          >
-                            {f.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </Reveal>
-          <Reveal delay={150}>
-            <div className="price-panel">
-              <span className="label">Plan breakdown</span>
-              <div className="amount" style={{ fontSize: 32, margin: '10px 0 18px' }}>${total}<span style={{ fontSize: 14 }}> / mo</span></div>
-              <p style={{ fontSize: 13, opacity: 0.65, margin: '0 0 18px', lineHeight: 1.5 }}>
-                Billed evenly all year. Visits scheduled by season, not by calendar month.
-              </p>
-              <ul>
-                {quote.breakdown.map(({ id, amount, seasonCount }) => (
                   <li key={id}>
-                    <span>{SERVICES.find((s) => s.id === id)?.name} <span style={{ opacity: 0.5 }}>×{seasonCount}</span></span>
+                    <span>{s?.name} <span className="fold-price-freq">· {freq?.label}</span></span>
                     <span>${amount}</span>
                   </li>
-                ))}
-                {quote.calloutBase > 0 && (
-                  <li>
-                    <span>Plan administration</span>
-                    <span>${quote.calloutBase}</span>
-                  </li>
-                )}
-                {selected.size === 0 && <li style={{ opacity: 0.6 }}>Pick a service to begin</li>}
-              </ul>
-              <button className="btn-primary">Lock in this plan</button>
-            </div>
-          </Reveal>
+                );
+              })}
+              {quote.calloutBase > 0 && (
+                <li><span>Plan fee</span><span>${quote.calloutBase}</span></li>
+              )}
+              {selected.size === 0 && (
+                <li className="fold-price-empty">Select services to see your quote</li>
+              )}
+            </ul>
+            <button className="btn-primary" style={{width:'100%',marginTop:16}}>Lock in this plan</button>
+          </div>
         </div>
       </section>
 

@@ -13,11 +13,10 @@ const SERVICES = [
   { id: 'house-wash', name: 'House Wash', why: 'Pollen and grime build through the warmer months — washed off before it sets in.', angle: 0, maxFrequency: 'twice-yearly' },
   { id: 'roof', name: 'Roof Wash & Mould Removal', why: 'Cleared before winter rain drives moss and mould deeper in.', angle: 45, maxFrequency: 'twice-yearly' },
   { id: 'gutter', name: 'Gutter Clean', why: 'Cleared before the storms hit, so water has somewhere to go.', angle: 90, maxFrequency: 'twice-yearly' },
-  { id: 'windows', name: 'Window Clean', why: 'The clean that actually happens, on schedule, without you doing it.', angle: 135, maxFrequency: 'monthly' },
+  { id: 'windows', name: 'Window Clean', why: 'The clean that actually happens, on schedule, without you doing it.', angle: 135, maxFrequency: 'quarterly' },
   { id: 'driveway', name: 'Driveway Clean', why: 'Oil, moss and stains lifted before they set into the concrete.', angle: 180, maxFrequency: 'twice-yearly' },
-  { id: 'hvac', name: 'HVAC Maintenance', why: 'Checked and filtered regularly so it never has to work harder than it should.', angle: 225, maxFrequency: 'monthly' },
+  { id: 'hvac', name: 'HVAC Maintenance', why: 'Checked and filtered regularly so it never has to work harder than it should.', angle: 225, maxFrequency: 'quarterly' },
   { id: 'spider', name: 'Spider Control', why: 'Treated before they move in for the warmer months — eaves, corners, window frames.', angle: 315, maxFrequency: 'twice-yearly' },
-  { id: 'spa', name: 'Spa Pool Maintenance', why: 'Filter and chemical service — choose how often suits your use.', angle: 270, maxFrequency: 'monthly' },
 ];
 
 function allowedFrequencies(serviceId) {
@@ -78,7 +77,7 @@ function isExterior(id) {
   return ['house-wash', 'roof', 'gutter', 'windows', 'driveway', 'spider'].includes(id);
 }
 
-function calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, spaSize, frequencyByService }) {
+function calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, frequencyByService }) {
   const band = SIZE_BANDS.find((b) => b.id === sizeBand) || SIZE_BANDS[1];
   const bedroomBand = BEDROOM_BANDS.find((b) => b.id === bedrooms) || BEDROOM_BANDS[1];
   let total = 0;
@@ -90,7 +89,6 @@ function calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, sp
     const freq = FREQUENCIES.find((f) => f.id === freqId) || FREQUENCIES[0];
     const visitCount = freq.visitsPerYear;
 
-    // Blend size and bedroom multipliers weighted by per-service sensitivity
     const sens = BEDROOM_SENSITIVITY[id] ?? 0.3;
     const blendedMultiplier = band.multiplier * (1 - sens) + (band.multiplier * bedroomBand.multiplier) * sens;
 
@@ -103,11 +101,6 @@ function calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, sp
     if (id === 'hvac') {
       const extraOutlets = Math.max(0, (hvacOutlets || 1) - 1);
       line += extraOutlets * 9;
-    }
-
-    if (id === 'spa') {
-      const spaMultiplier = { small: 0.85, medium: 1, large: 1.25 }[spaSize || 'medium'];
-      line = line * spaMultiplier;
     }
 
     line = Math.round(line);
@@ -270,7 +263,6 @@ export default function App() {
   const [bedrooms, setBedrooms] = useState('3');
   const [storeys, setStoreys] = useState(1);
   const [hvacOutlets, setHvacOutlets] = useState(1);
-  const [spaSize, setSpaSize] = useState('medium');
   const [frequencyByService, setFrequencyByService] = useState({
     roof: 'annual',
     gutter: 'annual',
@@ -305,10 +297,9 @@ export default function App() {
     setFrequencyByService((m) => ({ ...m, [id]: freqId }));
   };
 
-  const quote = calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, spaSize, frequencyByService });
+  const quote = calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, frequencyByService });
   const total = quote.total;
   const hasHvac = selected.has('hvac');
-  const hasSpa = selected.has('spa');
 
   return (
     <div className="page">
@@ -715,17 +706,17 @@ export default function App() {
           gap: 0;
         }
         @keyframes pulse-ring {
-          0% { box-shadow: 0 0 0 0 rgba(181,96,63,0.45); }
+          0% { box-shadow: 0 0 0 0 rgba(181,96,63,0.7); }
           70% { box-shadow: 0 0 0 7px rgba(181,96,63,0); }
           100% { box-shadow: 0 0 0 0 rgba(181,96,63,0); }
         }
         .fold-service-row {
           border-radius: 10px;
           padding: 6px 10px;
-          transition: background 0.15s;
+          background: var(--stone);
         }
         .fold-service-row.active {
-          background: #FBF1EC;
+          background: var(--stone);
         }
         .fold-service-toggle {
           display: flex;
@@ -742,7 +733,7 @@ export default function App() {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          border: 1.5px solid var(--clay);
+          border: 2px solid var(--clay);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -751,6 +742,7 @@ export default function App() {
           flex-shrink: 0;
           transition: all 0.15s;
           color: var(--clay);
+          background: rgba(181,96,63,0.08);
           animation: pulse-ring 2s ease-out infinite;
         }
         .fold-check.checked {
@@ -1112,7 +1104,7 @@ export default function App() {
 
           {/* Service list */}
           <div className="fold-services-grid">
-            {[SERVICES.slice(0,4), SERVICES.slice(4,8)].map((col, ci) => (
+            {[SERVICES.slice(0,4), SERVICES.slice(4,7)].map((col, ci) => (
               <div key={ci} className="fold-services-col">
                 {col.map((s) => {
                   const isActive = selected.has(s.id);
@@ -1142,17 +1134,6 @@ export default function App() {
                               className={`mini-pill ${hvacOutlets === n ? 'active' : ''}`}
                               onClick={() => setHvacOutlets(n)}
                             >{n}{n===4?'+':''}</button>
-                          ))}
-                        </div>
-                      )}
-                      {isActive && s.id === 'spa' && (
-                        <div className="fold-addon">
-                          <span>Spa size:</span>
-                          {['small','medium','large'].map((sz) => (
-                            <button key={sz} type="button"
-                              className={`mini-pill ${spaSize === sz ? 'active' : ''}`}
-                              onClick={() => setSpaSize(sz)}
-                            >{sz.charAt(0).toUpperCase()+sz.slice(1)}</button>
                           ))}
                         </div>
                       )}

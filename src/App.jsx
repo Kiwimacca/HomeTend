@@ -801,6 +801,55 @@ export default function App() {
           line-height: 1;
         }
         .fold-price-amount span { font-size: 16px; opacity: 0.65; }
+        .fold-price-empty-state {
+          font-size: 14px;
+          opacity: 0.55;
+          padding: 20px 0;
+          text-align: center;
+        }
+        .fold-price-row-hero {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin: 14px 0 10px;
+        }
+        .fold-price-block {
+          flex: 1;
+          background: rgba(255,255,255,0.08);
+          border-radius: 12px;
+          padding: 12px 14px;
+        }
+        .fold-price-block-label {
+          display: block;
+          font-size: 11px;
+          opacity: 0.6;
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          margin-bottom: 6px;
+        }
+        .fold-price-block-amount {
+          font-family: 'Fraunces', serif;
+          font-size: 28px;
+          font-weight: 500;
+          line-height: 1;
+        }
+        .fold-price-block-mo { font-size: 14px; opacity: 0.65; }
+        .fold-price-divider {
+          font-size: 12px;
+          opacity: 0.5;
+          font-weight: 600;
+          flex-shrink: 0;
+        }
+        .fold-price-yr2 {
+          font-size: 12.5px;
+          opacity: 0.7;
+          margin-bottom: 16px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+          line-height: 1.5;
+        }
+        .fold-price-yr2 strong { opacity: 1; }
         .fold-price-note {
           font-size: 12px;
           opacity: 0.55;
@@ -1148,25 +1197,40 @@ export default function App() {
         {/* Right: live price */}
         <div className="fold-right">
           <div className="fold-price-card">
-            <span className="fold-price-label">Your monthly plan</span>
-            <div className="fold-price-amount">${total}<span> /mo</span></div>
-            <div className="fold-price-note">Billed monthly · visits scheduled seasonally</div>
-            <ul className="fold-price-list">
-              {quote.breakdown.map(({ id, amount }) => {
-                const s = SERVICES.find((sv) => sv.id === id);
-                const freqId = frequencyByService[id] || 'annual';
-                const freq = FREQUENCIES.find((f) => f.id === freqId);
-                return (
-                  <li key={id}>
-                    <span>{s?.name} <span className="fold-price-freq">· {freq?.label}</span></span>
-                    <span>${amount}</span>
-                  </li>
-                );
-              })}
-              {selected.size === 0 && (
-                <li className="fold-price-empty">Select services to see your quote</li>
-              )}
-            </ul>
+            <span className="fold-price-label">Your plan — live</span>
+            {selected.size === 0 ? (
+              <div className="fold-price-empty-state">Select services to see your quote</div>
+            ) : (
+              <>
+                <div className="fold-price-row-hero">
+                  <div className="fold-price-block">
+                    <span className="fold-price-block-label">Pay today</span>
+                    <span className="fold-price-block-amount">${Math.round(total * 12 * 0.5)}</span>
+                  </div>
+                  <div className="fold-price-divider">then</div>
+                  <div className="fold-price-block">
+                    <span className="fold-price-block-label">Per month · year one</span>
+                    <span className="fold-price-block-amount">${Math.round((total * 12 * 0.5) / 11)}<span className="fold-price-block-mo">/mo</span></span>
+                  </div>
+                </div>
+                <div className="fold-price-yr2">
+                  From year two: <strong>${total}/mo</strong> — or renew on the same deposit structure.
+                </div>
+                <ul className="fold-price-list">
+                  {quote.breakdown.map(({ id, amount }) => {
+                    const s = SERVICES.find((sv) => sv.id === id);
+                    const freqId = frequencyByService[id] || 'annual';
+                    const freq = FREQUENCIES.find((f) => f.id === freqId);
+                    return (
+                      <li key={id}>
+                        <span>{s?.name} <span className="fold-price-freq">· {freq?.label}</span></span>
+                        <span>${amount}/mo</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
+            )}
             <button className="btn-primary" style={{width:'100%',marginTop:16}}>Lock in this plan</button>
           </div>
         </div>
@@ -1183,8 +1247,8 @@ export default function App() {
         </Reveal>
         <div className="steps">
           {[
-            { t: 'Build your plan', d: 'Select the services your home needs and how often. Your monthly cost updates instantly — no quotes, no phone calls.' },
-            { t: 'Sign your Service Agreement', d: 'Takes two minutes. No surprises in the fine print. A 50% deposit secures your plan, with the balance spread across equal monthly payments for year one.' },
+            { t: 'Build your plan', d: 'Select the services your home needs and how often. Your quote updates instantly — upfront amount and monthly instalments shown live.' },
+            { t: 'Sign your Service Agreement', d: 'Takes two minutes. A 50% deposit secures your plan, with the remaining 50% split across 11 equal monthly payments. No surprises in the fine print.' },
             { t: 'We schedule your visits', d: 'Your crew books in and texts you the date. Visits land when your home actually needs them — gutters before the storms, windows in spring.' },
             { t: 'Proof, every time', d: 'A photo and a short note land in your inbox the moment each visit is done. If we notice anything else worth flagging, we will.' },
           ].map((s, i) => (
@@ -1201,7 +1265,8 @@ export default function App() {
           <div className="payment-note">
             <span className="payment-note-icon">💳</span>
             <div>
-              <strong>Year one:</strong> 50% on sign-up, the balance across equal monthly payments. <strong>From year two:</strong> one simple monthly direct debit — same amount, every month.
+              <strong>Year one:</strong> 50% deposit on sign-up, remaining 50% across 11 equal monthly payments.
+              {' '}<strong>Year two onwards:</strong> your choice — continue on 12 equal monthly direct debits, or renew with a fresh 50% deposit and lower monthly instalments. We'll remind you six weeks before your anniversary so there are no surprises.
             </div>
           </div>
         </Reveal>

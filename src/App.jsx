@@ -16,8 +16,8 @@ const SERVICES = [
   { id: 'windows', name: 'Window Clean', why: 'The clean that actually happens, on schedule, without you doing it.', angle: 135, maxFrequency: 'monthly' },
   { id: 'driveway', name: 'Driveway Clean', why: 'Oil, moss and stains lifted before they set into the concrete.', angle: 180, maxFrequency: 'twice-yearly' },
   { id: 'hvac', name: 'HVAC Maintenance', why: 'Checked and filtered regularly so it never has to work harder than it should.', angle: 225, maxFrequency: 'monthly' },
-  { id: 'spa', name: 'Spa Pool Maintenance', why: 'Filter and chemical service — choose how often suits your use.', angle: 270, maxFrequency: 'monthly' },
   { id: 'spider', name: 'Spider Control', why: 'Treated before they move in for the warmer months — eaves, corners, window frames.', angle: 315, maxFrequency: 'twice-yearly' },
+  { id: 'spa', name: 'Spa Pool Maintenance', why: 'Filter and chemical service — choose how often suits your use.', angle: 270, maxFrequency: 'monthly' },
 ];
 
 function allowedFrequencies(serviceId) {
@@ -704,7 +704,12 @@ export default function App() {
           color: #8A8576;
           margin-bottom: 8px;
         }
-        .fold-services {
+        .fold-services-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0 24px;
+        }
+        .fold-services-col {
           display: flex;
           flex-direction: column;
           gap: 0;
@@ -828,6 +833,7 @@ export default function App() {
         @media (max-width: 900px) {
           .above-fold { grid-template-columns: 1fr; }
           .fold-right { position: static; }
+          .fold-services-grid { grid-template-columns: 1fr; }
         }
 
         /* PROPERTY FORM */
@@ -1064,7 +1070,7 @@ export default function App() {
       <section className="above-fold">
         {/* Left: headline + configurator */}
         <div className="fold-left">
-          <h1 className="fold-headline">Your biggest asset,<br/><em>let us tend to your maintenance needs.</em></h1>
+          <h1 className="fold-headline">Your home is your biggest asset,<br/><em>let us tend to your maintenance needs.</em></h1>
 
           {/* Property inputs */}
           <div className="fold-inputs">
@@ -1105,56 +1111,56 @@ export default function App() {
           </div>
 
           {/* Service list */}
-          <div className="fold-services">
-            {SERVICES.map((s) => {
-              const isActive = selected.has(s.id);
-              const allowed = allowedFrequencies(s.id);
-              const currentFreq = frequencyByService[s.id] || 'annual';
-              return (
-                <div key={s.id} className={`fold-service-row ${isActive ? 'active' : ''}`}>
-                  <button
-                    type="button"
-                    className="fold-service-toggle"
-                    onClick={() => toggle(s.id)}
-                  >
-                    <span className={`fold-check ${isActive ? 'checked' : ''}`}>{isActive ? '✓' : '+'}</span>
-                    <span className="fold-service-name">{s.name}</span>
-                  </button>
-                  {isActive && (
-                    <div className="fold-freq-pills">
-                      {allowed.map((f) => (
-                        <button key={f.id} type="button"
-                          className={`mini-pill ${currentFreq === f.id ? 'active' : ''}`}
-                          onClick={() => setFrequency(s.id, f.id)}
-                        >{f.label}</button>
-                      ))}
+          <div className="fold-services-grid">
+            {[SERVICES.slice(0,4), SERVICES.slice(4,8)].map((col, ci) => (
+              <div key={ci} className="fold-services-col">
+                {col.map((s) => {
+                  const isActive = selected.has(s.id);
+                  const allowed = allowedFrequencies(s.id);
+                  const currentFreq = frequencyByService[s.id] || 'annual';
+                  return (
+                    <div key={s.id} className={`fold-service-row ${isActive ? 'active' : ''}`}>
+                      <button type="button" className="fold-service-toggle" onClick={() => toggle(s.id)}>
+                        <span className={`fold-check ${isActive ? 'checked' : ''}`}>{isActive ? '✓' : '+'}</span>
+                        <span className="fold-service-name">{s.name}</span>
+                      </button>
+                      {isActive && (
+                        <div className="fold-freq-pills">
+                          {allowed.map((f) => (
+                            <button key={f.id} type="button"
+                              className={`mini-pill ${currentFreq === f.id ? 'active' : ''}`}
+                              onClick={() => setFrequency(s.id, f.id)}
+                            >{f.label}</button>
+                          ))}
+                        </div>
+                      )}
+                      {isActive && s.id === 'hvac' && (
+                        <div className="fold-addon">
+                          <span>Units:</span>
+                          {[1,2,3,4].map((n) => (
+                            <button key={n} type="button"
+                              className={`mini-pill ${hvacOutlets === n ? 'active' : ''}`}
+                              onClick={() => setHvacOutlets(n)}
+                            >{n}{n===4?'+':''}</button>
+                          ))}
+                        </div>
+                      )}
+                      {isActive && s.id === 'spa' && (
+                        <div className="fold-addon">
+                          <span>Spa size:</span>
+                          {['small','medium','large'].map((sz) => (
+                            <button key={sz} type="button"
+                              className={`mini-pill ${spaSize === sz ? 'active' : ''}`}
+                              onClick={() => setSpaSize(sz)}
+                            >{sz.charAt(0).toUpperCase()+sz.slice(1)}</button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {isActive && s.id === 'hvac' && (
-                    <div className="fold-addon">
-                      <span>Units:</span>
-                      {[1,2,3,4].map((n) => (
-                        <button key={n} type="button"
-                          className={`mini-pill ${hvacOutlets === n ? 'active' : ''}`}
-                          onClick={() => setHvacOutlets(n)}
-                        >{n}{n===4?'+':''}</button>
-                      ))}
-                    </div>
-                  )}
-                  {isActive && s.id === 'spa' && (
-                    <div className="fold-addon">
-                      <span>Spa size:</span>
-                      {['small','medium','large'].map((sz) => (
-                        <button key={sz} type="button"
-                          className={`mini-pill ${spaSize === sz ? 'active' : ''}`}
-                          onClick={() => setSpaSize(sz)}
-                        >{sz.charAt(0).toUpperCase()+sz.slice(1)}</button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -1190,7 +1196,7 @@ export default function App() {
         <Reveal>
           <div className="section-head">
             <span className="section-eyebrow">How it works</span>
-            <h2>Good homes don't happen. They're tended to.</h2>
+            <h2>A well-tended home costs less to own.</h2>
             <p className="section-sub">The average Kiwi homeowner spends $3,000–$5,000 a year on home maintenance — most of it unplanned, reactive, and more expensive than it needed to be. HomeTend changes that.</p>
           </div>
         </Reveal>

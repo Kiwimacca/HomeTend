@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+// ── REPLACE THIS with Finn's real Calendly link once his account is set up ──
+const CALENDLY_URL = 'https://calendly.com/hometend-christchurch/house-wash';
+// ────────────────────────────────────────────────────────────────────────────
+
 // Every service uses the same 4-option frequency control. Which options are
 // enabled per service is gated by maxFrequency below.
 const FREQUENCIES = [
@@ -608,6 +612,49 @@ function SignaturePad({ onSign }) {
   );
 }
 
+// ── CALENDLY INLINE EMBED ─────────────────────────────────────────────────
+function CalendlyEmbed({ url, prefill }) {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    // Load Calendly widget script once
+    const scriptId = 'calendly-widget-script';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://assets.calendly.com/assets/external/widget.js';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+
+    // Initialise the inline widget once script is ready
+    const init = () => {
+      if (window.Calendly && containerRef.current) {
+        window.Calendly.initInlineWidget({
+          url: `${url}?hide_gdpr_banner=1&primary_color=b5603f`,
+          parentElement: containerRef.current,
+          prefill: prefill || {},
+        });
+      }
+    };
+
+    // Script may already be loaded, or we wait for it
+    if (window.Calendly) {
+      init();
+    } else {
+      const script = document.getElementById(scriptId);
+      script.addEventListener('load', init);
+      return () => script.removeEventListener('load', init);
+    }
+  }, [url]);
+
+  return (
+    <div className="calendly-wrap">
+      <div ref={containerRef} className="calendly-container" />
+    </div>
+  );
+}
+
 // ── SIGNUP FLOW MODAL ──────────────────────────────────────────────────────
 function SignupModal({ plan, total, quote, frequencyByService, onClose }) {
   const [step, setStep] = useState(1); // 1=form, 2=agreement, 3=signed, 4=confirmed
@@ -861,15 +908,11 @@ function SignupModal({ plan, total, quote, frequencyByService, onClose }) {
 
         {/* ── STEP 4: Deposit paid — book first visit ── */}
         {step === 4 && (
-          <div className="modal-body modal-centered">
-            <div className="modal-success-icon">🏠</div>
-            <h2 className="modal-title">Deposit received — thank you. We look forward to tending to your home. Let's book your first visit.</h2>
-            <p className="modal-sub">Your first visit is a house wash. Pick a time that suits you and we'll take care of the rest.</p>
-            <button className="btn-primary" style={{ width: '100%', marginTop: 24 }}>
-              Book your house wash →
-            </button>
-            <p className="modal-stripe-note">You'll be taken to our scheduling tool to pick a date and time.</p>
-            <button className="btn-secondary" style={{ marginTop: 12 }} onClick={onClose}>
+          <div className="modal-body">
+            <h2 className="modal-title">Let's book your first visit</h2>
+            <p className="modal-sub">Pick a time that suits you — your house wash will be Finn's first job at your property.</p>
+            <CalendlyEmbed url={CALENDLY_URL} prefill={{ name: form.name, email: form.email }} />
+            <button className="btn-secondary calendly-skip" onClick={onClose}>
               I'll book later — close
             </button>
           </div>
@@ -1867,6 +1910,30 @@ export default function App() {
           to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ── CALENDLY EMBED ── */
+        .calendly-wrap {
+          margin-top: 16px;
+          border-radius: 14px;
+          overflow: hidden;
+          border: 1px solid var(--line);
+        }
+        .calendly-container {
+          min-width: 320px;
+          height: 630px;
+        }
+        .calendly-skip {
+          margin-top: 16px;
+          display: block;
+          width: 100%;
+          text-align: center;
+          font-size: 13px;
+          color: #8A8576;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 8px;
+        }
+
         /* ── MODAL ── */
         .modal-backdrop {
           position: fixed;
@@ -1884,7 +1951,7 @@ export default function App() {
           background: var(--paper);
           border-radius: 20px;
           width: 100%;
-          max-width: 680px;
+          max-width: 760px;
           position: relative;
           box-shadow: 0 32px 80px rgba(0,0,0,0.35);
           min-height: 200px;

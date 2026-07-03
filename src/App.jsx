@@ -311,6 +311,15 @@ export default function App() {
     gutter: 'annual',
     'house-wash': 'annual',
   });
+  const tabPanelRef = useRef(null);
+
+  const openTab = (id) => {
+    setActiveTab((prev) => {
+      const next = prev === id ? null : id;
+      if (next) setTimeout(() => tabPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+      return next;
+    });
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -1117,6 +1126,25 @@ export default function App() {
         .final-cta h2 { color: var(--paper); font-size: clamp(32px, 5vw, 50px); max-width: 18ch; margin: 0 auto; }
         .final-cta p { color: rgba(252,251,248,0.7); margin: 20px auto 36px; max-width: 44ch; font-size: 17px; }
 
+        /* FOLD CAROUSEL (right column version) */
+        .fold-carousel {
+          margin-top: 16px;
+        }
+        .fold-carousel .carousel-section {
+          border-radius: 18px;
+          padding: 28px 24px;
+        }
+        .fold-carousel .carousel-quote {
+          font-size: 14.5px;
+        }
+        .fold-carousel .carousel-stars {
+          font-size: 16px;
+          margin-bottom: 12px;
+        }
+        .fold-carousel .carousel-author {
+          margin-bottom: 16px;
+        }
+
         /* NAV active tab */
         .nav-links li.active { opacity: 1; }
 
@@ -1230,7 +1258,7 @@ export default function App() {
           ].map((tab) => (
             <li key={tab.id}
               style={{ opacity: activeTab === tab.id ? 1 : 0.7, borderBottom: activeTab === tab.id ? '2px solid var(--clay)' : '2px solid transparent', paddingBottom: 2 }}
-              onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
+              onClick={() => openTab(tab.id)}
             >{tab.label}</li>
           ))}
         </ul>
@@ -1363,15 +1391,16 @@ export default function App() {
             )}
             <button className="btn-primary" style={{width:'100%',marginTop:16}}>Lock in this plan</button>
           </div>
+
+          {/* Carousel sits below price card in right column */}
+          <div className="fold-carousel">
+            <TestimonialCarousel />
+          </div>
         </div>
       </section>
 
-      {/* TESTIMONIALS CAROUSEL — always visible on homepage */}
-      {!activeTab && (
-        <TestimonialCarousel />
-      )}
-
       {/* TAB PANELS */}
+      <div ref={tabPanelRef}>
       {activeTab === 'how' && (
         <section className="tab-panel section">
           <Reveal>
@@ -1465,6 +1494,7 @@ export default function App() {
           </div>
         </section>
       )}
+      </div>
 
       <footer>
         <span>HomeTend. © 2026</span>

@@ -32,53 +32,35 @@ function allowedFrequencies(serviceId) {
 // Source ranges (one-off, NZD): house wash $239-295, roof moss/mould $250-600,
 // gutter $100-300, windows (ext) $50-110, driveway $150-350, HVAC $80-200/unit,
 // spa pool $120-250+, spider control $99-150.
-const SIZE_BANDS = [
-  { id: 'small', label: 'Small', hint: 'Compact home or townhouse', multiplier: 0.8 },
-  { id: 'medium', label: 'Medium', hint: 'Average standalone home', multiplier: 1.0 },
-  { id: 'large', label: 'Large', hint: 'Larger home or bigger section', multiplier: 1.3 },
-];
-
+// Pricing matrix — bedrooms and storeys determine size scaling.
+// Property size removed — bedrooms is a more precise and customer-friendly proxy.
+// Source ranges (one-off, NZD): house wash $239-295, roof moss/mould $250-600,
+// gutter $100-300, windows (ext) $50-110, driveway $150-350, HVAC $80-200/unit,
+// spider control $99-150.
 const BEDROOM_BANDS = [
-  { id: '1-2', label: '1–2', multiplier: 0.85 },
-  { id: '3', label: '3', multiplier: 1.0 },
-  { id: '4+', label: '4+', multiplier: 1.2 },
+  { id: '1-2', label: '1–2', multiplier: 0.75 },
+  { id: '3',   label: '3',   multiplier: 1.0  },
+  { id: '4+',  label: '4+',  multiplier: 1.3  },
 ];
 
-// Per-service bedroom sensitivity — how much bedroom count shifts the price.
-// Services tied to interior/window count are more bedroom-sensitive than
-// exterior footprint services (roof, driveway) which are more size-sensitive.
-const BEDROOM_SENSITIVITY = {
-  'house-wash': 0.3,
-  'roof': 0.2,
-  'gutter': 0.2,
-  'windows': 0.7,
-  'driveway': 0.2,
-  'hvac': 0.6,
-  'spa': 0.0,
-  'spider': 0.4,
-};
-
-// Rate per single visit/year (monthly-equivalent, with premium applied).
-// Multiplied by however many visits/year the customer chooses.
+// Rate per single visit/year (monthly-equivalent, with ~12% reliability premium).
 const SERVICE_RATES = {
   'house-wash': 25,
-  'roof': 37,
-  'gutter': 17,
-  'windows': 8.5,
-  'driveway': 20,
-  'hvac': 13,
-  'spa': 17,
-  'spider': 11,
+  'roof':       37,
+  'gutter':     17,
+  'windows':     8.5,
+  'driveway':   20,
+  'hvac':       13,
+  'spider':     11,
 };
 
-const STOREY_SURCHARGE = { 1: 0, 2: 6, 3: 12 }; // added per applicable exterior service if 2+ storeys
+const STOREY_SURCHARGE = { 1: 0, 2: 6, 3: 12 };
 
 function isExterior(id) {
   return ['house-wash', 'roof', 'gutter', 'windows', 'driveway', 'spider'].includes(id);
 }
 
-function calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, frequencyByService }) {
-  const band = SIZE_BANDS.find((b) => b.id === sizeBand) || SIZE_BANDS[1];
+function calculateQuote({ selected, bedrooms, storeys, hvacOutlets, frequencyByService }) {
   const bedroomBand = BEDROOM_BANDS.find((b) => b.id === bedrooms) || BEDROOM_BANDS[1];
   let total = 0;
   const breakdown = [];
@@ -89,10 +71,7 @@ function calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, fr
     const freq = FREQUENCIES.find((f) => f.id === freqId) || FREQUENCIES[0];
     const visitCount = freq.visitsPerYear;
 
-    const sens = BEDROOM_SENSITIVITY[id] ?? 0.3;
-    const blendedMultiplier = band.multiplier * (1 - sens) + (band.multiplier * bedroomBand.multiplier) * sens;
-
-    let line = rate * visitCount * blendedMultiplier;
+    let line = rate * visitCount * bedroomBand.multiplier;
 
     if (isExterior(id) && storeys >= 2) {
       line += STOREY_SURCHARGE[storeys] || 0;
@@ -301,7 +280,6 @@ function TestimonialCarousel() {
 export default function App() {
   const [selected, setSelected] = useState(new Set(['roof', 'gutter', 'house-wash']));
   const [scrolled, setScrolled] = useState(false);
-  const [sizeBand, setSizeBand] = useState('medium');
   const [bedrooms, setBedrooms] = useState('3');
   const [storeys, setStoreys] = useState(1);
   const [hvacOutlets, setHvacOutlets] = useState(1);
@@ -349,7 +327,7 @@ export default function App() {
     setFrequencyByService((m) => ({ ...m, [id]: freqId }));
   };
 
-  const quote = calculateQuote({ selected, sizeBand, bedrooms, storeys, hvacOutlets, frequencyByService });
+  const quote = calculateQuote({ selected, bedrooms, storeys, hvacOutlets, frequencyByService });
   const total = quote.total;
   const hasHvac = selected.has('hvac');
 
@@ -713,15 +691,46 @@ export default function App() {
           margin: 0;
         }
 
-        /* ABOVE FOLD */
+        /* ABOVE FOLD — 3 panes */
         .above-fold {
           display: grid;
-          grid-template-columns: 1fr 340px;
-          gap: 40px;
-          padding: 40px 6vw 60px;
-          max-width: 1320px;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 0;
+          max-width: 1400px;
           margin: 0 auto;
-          align-items: start;
+          min-height: calc(100vh - 70px);
+        }
+        .fold-pane {
+          padding: 36px 28px;
+          display: flex;
+          flex-direction: column;
+        }
+        .fold-pane-hero {
+          background: var(--paper);
+          border-right: 1px solid var(--line);
+        }
+        .fold-pane-services {
+          background: var(--stone);
+          border-right: 1px solid var(--line);
+          overflow-y: auto;
+        }
+        .fold-pane-right {
+          background: var(--ink);
+          overflow-y: auto;
+        }
+        .fold-pane-label {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: #8A8576;
+          margin-bottom: 16px;
+        }
+        .fold-services-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          flex: 1;
         }
         .fold-headline {
           font-size: clamp(28px, 4vw, 44px);
@@ -826,25 +835,20 @@ export default function App() {
           font-weight: 600;
         }
 
-        /* FOLD PRICE CARD */
-        .fold-right {
-          position: sticky;
-          top: 80px;
-        }
+        /* FOLD PRICE CARD — dark pane */
         .fold-price-card {
-          background: var(--ink);
+          background: transparent;
           color: var(--paper);
-          border-radius: 22px;
-          padding: 32px 28px;
-          box-shadow: 0 20px 60px -24px rgba(38,48,42,0.35);
+          padding: 0;
         }
         .fold-price-label {
-          font-size: 12px;
+          font-size: 11px;
           opacity: 0.6;
-          font-weight: 600;
-          letter-spacing: 0.04em;
+          font-weight: 700;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           display: block;
+          margin-bottom: 16px;
         }
         .fold-price-amount {
           font-family: 'Fraunces', serif;
@@ -924,8 +928,9 @@ export default function App() {
         .fold-price-empty { opacity: 0.5; justify-content: center !important; }
 
         @media (max-width: 900px) {
-          .above-fold { grid-template-columns: 1fr; }
-          .fold-right { position: static; }
+          .above-fold { grid-template-columns: 1fr; min-height: auto; }
+          .fold-pane { border-right: none; border-bottom: 1px solid var(--line); }
+          .fold-pane-right { border-bottom: none; }
           .fold-services-grid { grid-template-columns: 1fr; }
         }
 
@@ -1126,23 +1131,30 @@ export default function App() {
         .final-cta h2 { color: var(--paper); font-size: clamp(32px, 5vw, 50px); max-width: 18ch; margin: 0 auto; }
         .final-cta p { color: rgba(252,251,248,0.7); margin: 20px auto 36px; max-width: 44ch; font-size: 17px; }
 
-        /* FOLD CAROUSEL (right column version) */
+        /* FOLD CAROUSEL (right pane version) */
         .fold-carousel {
-          margin-top: 16px;
+          margin-top: 24px;
+          border-top: 1px solid rgba(255,255,255,0.1);
+          padding-top: 24px;
         }
         .fold-carousel .carousel-section {
-          border-radius: 18px;
-          padding: 28px 24px;
+          background: transparent;
+          padding: 0;
         }
         .fold-carousel .carousel-quote {
-          font-size: 14.5px;
+          font-size: 14px;
+          color: rgba(252,251,248,0.85);
         }
         .fold-carousel .carousel-stars {
-          font-size: 16px;
-          margin-bottom: 12px;
+          font-size: 15px;
+          margin-bottom: 10px;
         }
         .fold-carousel .carousel-author {
-          margin-bottom: 16px;
+          margin-bottom: 14px;
+          color: var(--sage);
+        }
+        .fold-carousel .carousel-btn {
+          background: rgba(255,255,255,0.08);
         }
 
         /* NAV active tab */
@@ -1265,26 +1277,13 @@ export default function App() {
         <button className="nav-cta" onClick={() => setActiveTab(null)}>Build my plan</button>
       </nav>
 
-      {/* ABOVE-FOLD PRODUCT SECTION */}
+      {/* ABOVE-FOLD — 3 pane layout */}
       <section className="above-fold">
-        {/* Left: headline + configurator */}
-        <div className="fold-left">
-          <h1 className="fold-headline">Your home is your biggest asset,<br/><em>let us tend to your maintenance needs.</em></h1>
 
-          {/* Property inputs */}
+        {/* Pane 1: Headline + property inputs */}
+        <div className="fold-pane fold-pane-hero">
+          <h1 className="fold-headline">Your home is your biggest asset,<br/><em>let us tend to your maintenance needs.</em></h1>
           <div className="fold-inputs">
-            <div className="fold-input-group">
-              <label>Property size</label>
-              <div className="pill-group">
-                {SIZE_BANDS.map((b) => (
-                  <button key={b.id} type="button"
-                    className={`pill ${sizeBand === b.id ? 'active' : ''}`}
-                    onClick={() => setSizeBand(b.id)}
-                    title={b.hint}
-                  >{b.label}</button>
-                ))}
-              </div>
-            </div>
             <div className="fold-input-group">
               <label>Bedrooms</label>
               <div className="pill-group">
@@ -1307,53 +1306,54 @@ export default function App() {
                 ))}
               </div>
             </div>
-          </div>
-
-          {/* Service list */}
-          <div className="fold-services-grid">
-            {[SERVICES.slice(0,4), SERVICES.slice(4,7)].map((col, ci) => (
-              <div key={ci} className="fold-services-col">
-                {col.map((s) => {
-                  const isActive = selected.has(s.id);
-                  const allowed = allowedFrequencies(s.id);
-                  const currentFreq = frequencyByService[s.id] || 'annual';
-                  return (
-                    <div key={s.id} className={`fold-service-row ${isActive ? 'active' : ''}`}>
-                      <button type="button" className="fold-service-toggle" onClick={() => toggle(s.id)}>
-                        <span className={`fold-check ${isActive ? 'checked' : ''}`}>{isActive ? '✓' : '+'}</span>
-                        <span className="fold-service-name">{s.name}</span>
-                      </button>
-                      {isActive && (
-                        <div className="fold-freq-pills">
-                          {allowed.map((f) => (
-                            <button key={f.id} type="button"
-                              className={`mini-pill ${currentFreq === f.id ? 'active' : ''}`}
-                              onClick={() => setFrequency(s.id, f.id)}
-                            >{f.label}</button>
-                          ))}
-                        </div>
-                      )}
-                      {isActive && s.id === 'hvac' && (
-                        <div className="fold-addon">
-                          <span>Units:</span>
-                          {[1,2,3,4].map((n) => (
-                            <button key={n} type="button"
-                              className={`mini-pill ${hvacOutlets === n ? 'active' : ''}`}
-                              onClick={() => setHvacOutlets(n)}
-                            >{n}{n===4?'+':''}</button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+            {hasHvac && (
+              <div className="fold-input-group">
+                <label>HVAC units</label>
+                <div className="pill-group">
+                  {[1,2,3,4].map((n) => (
+                    <button key={n} type="button"
+                      className={`pill ${hvacOutlets === n ? 'active' : ''}`}
+                      onClick={() => setHvacOutlets(n)}
+                    >{n}{n===4?'+':''}</button>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
-        {/* Right: live price */}
-        <div className="fold-right">
+        {/* Pane 2: Services */}
+        <div className="fold-pane fold-pane-services">
+          <div className="fold-pane-label">Select services</div>
+          <div className="fold-services-list">
+            {SERVICES.map((s) => {
+              const isActive = selected.has(s.id);
+              const allowed = allowedFrequencies(s.id);
+              const currentFreq = frequencyByService[s.id] || 'annual';
+              return (
+                <div key={s.id} className={`fold-service-row ${isActive ? 'active' : ''}`}>
+                  <button type="button" className="fold-service-toggle" onClick={() => toggle(s.id)}>
+                    <span className={`fold-check ${isActive ? 'checked' : ''}`}>{isActive ? '✓' : '+'}</span>
+                    <span className="fold-service-name">{s.name}</span>
+                  </button>
+                  {isActive && (
+                    <div className="fold-freq-pills">
+                      {allowed.map((f) => (
+                        <button key={f.id} type="button"
+                          className={`mini-pill ${currentFreq === f.id ? 'active' : ''}`}
+                          onClick={() => setFrequency(s.id, f.id)}
+                        >{f.label}</button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Pane 3: Live price + carousel */}
+        <div className="fold-pane fold-pane-right">
           <div className="fold-price-card">
             <span className="fold-price-label">Your plan — live</span>
             {selected.size === 0 ? (
@@ -1367,12 +1367,12 @@ export default function App() {
                   </div>
                   <div className="fold-price-divider">then</div>
                   <div className="fold-price-block">
-                    <span className="fold-price-block-label">Per month · year one</span>
+                    <span className="fold-price-block-label">Per month · yr one</span>
                     <span className="fold-price-block-amount">${Math.round((total * 12 * 0.5) / 11)}<span className="fold-price-block-mo">/mo</span></span>
                   </div>
                 </div>
                 <div className="fold-price-yr2">
-                  From year two: <strong>${total}/mo</strong> — or renew on the same deposit structure.
+                  From year two: <strong>${total}/mo</strong> — or renew on deposit.
                 </div>
                 <ul className="fold-price-list">
                   {quote.breakdown.map(({ id, amount }) => {
@@ -1382,7 +1382,7 @@ export default function App() {
                     return (
                       <li key={id}>
                         <span>{s?.name} <span className="fold-price-freq">· {freq?.label}</span></span>
-                        <span>${amount}/mo</span>
+                        <span>${amount}</span>
                       </li>
                     );
                   })}
@@ -1392,11 +1392,12 @@ export default function App() {
             <button className="btn-primary" style={{width:'100%',marginTop:16}}>Lock in this plan</button>
           </div>
 
-          {/* Carousel sits below price card in right column */}
+          {/* Vertical carousel below price card */}
           <div className="fold-carousel">
             <TestimonialCarousel />
           </div>
         </div>
+
       </section>
 
       {/* TAB PANELS */}

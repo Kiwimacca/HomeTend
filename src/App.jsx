@@ -507,6 +507,378 @@ function FilmReel() {
   );
 }
 
+// ── SIGNATURE PAD ─────────────────────────────────────────────────────────
+function SignaturePad({ onSign }) {
+  const canvasRef = useRef(null);
+  const drawing = useRef(false);
+  const [hasSignature, setHasSignature] = useState(false);
+  const [mode, setMode] = useState('draw'); // 'draw' | 'type'
+  const [typedName, setTypedName] = useState('');
+
+  const getPos = (e, canvas) => {
+    const rect = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return [src.clientX - rect.left, src.clientY - rect.top];
+  };
+
+  const start = (e) => {
+    e.preventDefault();
+    drawing.current = true;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const [x, y] = getPos(e, canvas);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
+
+  const draw = (e) => {
+    e.preventDefault();
+    if (!drawing.current) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const [x, y] = getPos(e, canvas);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = '#26302A';
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    setHasSignature(true);
+  };
+
+  const stop = () => { drawing.current = false; };
+
+  const clear = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setHasSignature(false);
+  };
+
+  const confirm = () => {
+    if (mode === 'type') {
+      if (typedName.trim().length < 2) return;
+      onSign({ type: 'typed', value: typedName.trim() });
+    } else {
+      if (!hasSignature) return;
+      const canvas = canvasRef.current;
+      onSign({ type: 'drawn', value: canvas.toDataURL() });
+    }
+  };
+
+  return (
+    <div className="sig-wrap">
+      <div className="sig-mode-toggle">
+        <button type="button" className={`sig-mode-btn ${mode === 'draw' ? 'active' : ''}`} onClick={() => setMode('draw')}>Draw</button>
+        <button type="button" className={`sig-mode-btn ${mode === 'type' ? 'active' : ''}`} onClick={() => setMode('type')}>Type</button>
+      </div>
+      {mode === 'draw' ? (
+        <div className="sig-canvas-wrap">
+          <canvas
+            ref={canvasRef}
+            width={480}
+            height={120}
+            className="sig-canvas"
+            onMouseDown={start} onMouseMove={draw} onMouseUp={stop} onMouseLeave={stop}
+            onTouchStart={start} onTouchMove={draw} onTouchEnd={stop}
+          />
+          <span className="sig-hint">Sign above</span>
+          {hasSignature && <button type="button" className="sig-clear" onClick={clear}>Clear</button>}
+        </div>
+      ) : (
+        <div className="sig-type-wrap">
+          <input
+            className="sig-type-input"
+            placeholder="Type your full name"
+            value={typedName}
+            onChange={e => setTypedName(e.target.value)}
+          />
+          {typedName && <div className="sig-type-preview">{typedName}</div>}
+        </div>
+      )}
+      <button
+        type="button"
+        className="btn-primary sig-confirm"
+        disabled={mode === 'draw' ? !hasSignature : typedName.trim().length < 2}
+        onClick={confirm}
+      >
+        Confirm signature
+      </button>
+    </div>
+  );
+}
+
+// ── SIGNUP FLOW MODAL ──────────────────────────────────────────────────────
+function SignupModal({ plan, total, quote, frequencyByService, onClose }) {
+  const [step, setStep] = useState(1); // 1=form, 2=agreement, 3=signed, 4=confirmed
+  const [form, setForm] = useState({
+    name: '', email: '', mobile: '', address: '', access: '', dogs: 'No',
+  });
+  const [errors, setErrors] = useState({});
+  const [signature, setSignature] = useState(null);
+  const agreementRef = useRef(null);
+
+  const today = new Date().toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric' });
+  const annualValue = total * 12;
+  const deposit = Math.round(annualValue * 0.5);
+  const monthlyInstalment = Math.round((annualValue * 0.5) / 11);
+
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = 'Required';
+    if (!form.email.match(/^[^@]+@[^@]+\.[^@]+$/)) e.email = 'Valid email required';
+    if (!form.mobile.trim()) e.mobile = 'Required';
+    if (!form.address.trim()) e.address = 'Required';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (validate()) {
+      setStep(2);
+      setTimeout(() => agreementRef.current?.scrollTo(0, 0), 50);
+    }
+  };
+
+  const handleSign = (sig) => {
+    setSignature(sig);
+    setStep(3);
+  };
+
+  const handlePayDeposit = () => {
+    setStep(4);
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal-sheet">
+        <button className="modal-close" onClick={onClose}>✕</button>
+
+        {/* Step indicator */}
+        <div className="modal-steps">
+          {['Your details', 'Service Agreement', 'Pay deposit', 'Book first visit'].map((s, i) => (
+            <div key={s} className={`modal-step ${step > i+1 ? 'done' : step === i+1 ? 'active' : ''}`}>
+              <div className="modal-step-dot">{step > i+1 ? '✓' : i+1}</div>
+              <span>{s}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* ── STEP 1: Details form ── */}
+        {step === 1 && (
+          <div className="modal-body">
+            <h2 className="modal-title">Your details</h2>
+            <p className="modal-sub">Takes about a minute. This information goes directly into your Service Agreement.</p>
+            <div className="form-grid">
+              {[
+                { key: 'name', label: 'Full name', type: 'text', placeholder: 'Jane Smith' },
+                { key: 'email', label: 'Email address', type: 'email', placeholder: 'jane@example.com' },
+                { key: 'mobile', label: 'Mobile number', type: 'tel', placeholder: '021 123 4567' },
+                { key: 'address', label: 'Home address', type: 'text', placeholder: '12 Example Street, Merivale, Christchurch' },
+              ].map(({ key, label, type, placeholder }) => (
+                <div key={key} className="form-field">
+                  <label>{label}</label>
+                  <input
+                    type={type}
+                    placeholder={placeholder}
+                    value={form[key]}
+                    onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                    className={errors[key] ? 'error' : ''}
+                  />
+                  {errors[key] && <span className="form-error">{errors[key]}</span>}
+                </div>
+              ))}
+              <div className="form-field form-full">
+                <label>Special access instructions <span className="form-optional">(optional)</span></label>
+                <input
+                  type="text"
+                  placeholder="e.g. gate code 1234, access via side lane"
+                  value={form.access}
+                  onChange={e => setForm(f => ({ ...f, access: e.target.value }))}
+                />
+              </div>
+              <div className="form-field">
+                <label>Dogs on the property?</label>
+                <div className="form-radio-group">
+                  {['No', 'Yes — will be secured', 'Yes — please call ahead'].map(opt => (
+                    <label key={opt} className="form-radio">
+                      <input type="radio" name="dogs" value={opt} checked={form.dogs === opt} onChange={e => setForm(f => ({ ...f, dogs: e.target.value }))} />
+                      <span>{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <button className="btn-primary" style={{ width: '100%', marginTop: 24 }} onClick={handleSubmit}>
+              Continue to Service Agreement →
+            </button>
+          </div>
+        )}
+
+        {/* ── STEP 2: Agreement ── */}
+        {step === 2 && (
+          <div className="modal-body modal-agreement" ref={agreementRef}>
+            <div className="agreement-doc">
+
+              <div className="agreement-header">
+                <div className="agreement-logo">HomeTend.</div>
+                <div className="agreement-meta">
+                  <div>HomeTend Christchurch Limited</div>
+                  <div>hello@hometend.co.nz</div>
+                  <div>Date: {today}</div>
+                </div>
+              </div>
+
+              <h1 className="agreement-title">Service Agreement</h1>
+
+              {/* Plan Summary */}
+              <div className="agreement-section agreement-plan-summary">
+                <h2>Your Plan Summary</h2>
+                <div className="agreement-customer-details">
+                  <div><strong>Customer:</strong> {form.name}</div>
+                  <div><strong>Address:</strong> {form.address}</div>
+                  <div><strong>Email:</strong> {form.email}</div>
+                  <div><strong>Mobile:</strong> {form.mobile}</div>
+                  {form.access && <div><strong>Access instructions:</strong> {form.access}</div>}
+                  <div><strong>Dogs on property:</strong> {form.dogs}</div>
+                </div>
+
+                <table className="agreement-table">
+                  <thead>
+                    <tr><th>Service</th><th>Frequency</th><th>Monthly equivalent</th></tr>
+                  </thead>
+                  <tbody>
+                    {quote.breakdown.map(({ id, amount }) => {
+                      const svc = SERVICES.find(s => s.id === id);
+                      const freqId = frequencyByService[id] || 'annual';
+                      const freq = FREQUENCIES.find(f => f.id === freqId);
+                      return (
+                        <tr key={id}>
+                          <td>{svc?.name}</td>
+                          <td>{freq?.label}</td>
+                          <td>${amount}/mo</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+
+                <div className="agreement-payment-summary">
+                  <div className="agreement-payment-row"><span>Annual plan value</span><span>${annualValue}</span></div>
+                  <div className="agreement-payment-row highlight"><span>Deposit due today (50%)</span><span>${deposit}</span></div>
+                  <div className="agreement-payment-row"><span>Monthly instalments × 11</span><span>${monthlyInstalment}/mo</span></div>
+                  <div className="agreement-payment-row"><span>Year two monthly direct debit</span><span>${total}/mo</span></div>
+                </div>
+              </div>
+
+              {/* Key points box */}
+              <div className="agreement-keypoints">
+                <h3>Key things to know before you sign</h3>
+                <ul>
+                  <li>50% deposit today, then 11 equal monthly payments for the rest of year one</li>
+                  <li>Your first visit is a house wash — we'll confirm the date with you after signing</li>
+                  <li>Cancel any time with 30 days notice — deposit is non-refundable</li>
+                  <li>If we were at your door today, you have 5 working days to change your mind — full refund, no questions</li>
+                  <li>We'll send you a photo when every visit is done</li>
+                </ul>
+              </div>
+
+              {/* Signature block */}
+              <div className="agreement-signature-block">
+                <h2>Sign here</h2>
+                <p>By signing below you confirm you have read and agree to the terms of this agreement.</p>
+                <SignaturePad onSign={handleSign} />
+              </div>
+
+              {/* Full terms */}
+              <div className="agreement-terms">
+                <h2>Terms and Conditions</h2>
+
+                <h3>1. Your Plan</h3>
+                <p>This agreement sets out the home maintenance services you have selected, the frequency at which they will be delivered, and the payment terms that apply. Your plan begins on the date you sign this agreement and your first payment is received.</p>
+
+                <h3>2. Payment Terms</h3>
+                <p><strong>Year One:</strong> A deposit of 50% of your annual plan value is due at the time of signing. The remaining 50% is divided into 11 equal monthly instalments, charged on the same date each month following your sign-up date.</p>
+                <p><strong>Year Two Onwards:</strong> Approximately six weeks before your plan anniversary, we will contact you to confirm your renewal preferences. You may choose to continue on 12 equal monthly direct debit payments, or renew with a fresh 50% deposit and lower monthly instalments. If we do not hear from you, your plan will automatically renew on 12 equal monthly payments.</p>
+                <p>All payments are processed securely via Stripe. All prices are in New Zealand dollars and are inclusive of GST where applicable.</p>
+
+                <h3>3. Scheduling and Delivery</h3>
+                <p>Services are scheduled at the time of year most appropriate for each service. We will notify you of scheduled visits at least 48 hours in advance by text message. We reserve the right to reschedule a visit due to adverse weather, equipment issues, or circumstances outside our control, and will reschedule within 14 days.</p>
+                <p><strong>First Visit:</strong> Your first visit will be a house wash, scheduled at a time agreed between you and HomeTend following signing.</p>
+
+                <h3>4. Access to Your Property</h3>
+                <p>You agree to ensure that our crew can safely access the areas of your property required to deliver the agreed services. Our crew will close all gates and leave the property as they found it upon completion of each visit. If our crew is unable to access your property on a scheduled date due to circumstances within your control, the visit will be treated as completed for billing purposes.</p>
+
+                <h3>5. What We Will Do</h3>
+                <p>On completion of each visit, HomeTend will send you a photo of the completed work, note any items of concern observed on your property, and confirm the date of your next scheduled visit. We will carry out all services with reasonable care and skill.</p>
+
+                <h3>6. Cancellation and Changes</h3>
+                <p>You may cancel your plan at any time by giving 30 days written notice to hello@hometend.co.nz. If you cancel during Year One, your deposit is non-refundable. You may add or remove services at any time — changes take effect from the following billing cycle.</p>
+
+                <h3>7. Cooling-Off Period</h3>
+                <p>If this agreement was entered into as a result of an unsolicited approach at your home, you have the right to cancel within 5 working days of signing without penalty. Any deposit paid will be refunded in full. To exercise this right, notify us in writing at hello@hometend.co.nz.</p>
+
+                <h3>8. Liability</h3>
+                <p>HomeTend Christchurch Limited carries public liability insurance. Our liability to you is limited to the value of services delivered under this agreement in the 12 months preceding any claim. Nothing in this agreement limits any rights you have under the Consumer Guarantees Act 1993 or the Fair Trading Act 1986.</p>
+
+                <h3>9. Privacy</h3>
+                <p>We collect your personal information for the purpose of delivering our services and processing payments. We will not sell or share your personal information with third parties except as required to deliver our services or as required by law. Our handling of your information is governed by the Privacy Act 2020.</p>
+
+                <h3>10. General</h3>
+                <p>This agreement is governed by the laws of New Zealand. This agreement, together with your Plan Summary above, constitutes the entire agreement between us in relation to the services described.</p>
+
+                <div className="agreement-authorised">
+                  <div>
+                    <svg viewBox="0 0 300 60" className="agreement-sig-svg">
+                      <path d="M 30 45 C 28 30,32 18,38 16 C 44 14,46 24,42 32 C 38 40,32 44,34 50 C 36 56,44 52,52 42 M 58 24 C 58 22,60 19,62 20 C 64 21,64 26,62 34 C 60 42,58 48,60 52 M 58 28 C 64 27,72 27,76 29 M 82 18 C 78 24,76 34,76 44 C 76 54,78 58,82 57 C 86 56,90 49,92 40 C 94 31,92 22,88 21 C 84 20,80 26,80 34 M 100 22 C 98 29,96 39,96 50 C 96 61,100 64,106 60 M 100 32 C 104 30,112 30,118 34 M 132 18 C 128 30,126 44,128 56 C 130 68,136 72,142 66 C 148 60,154 46,156 34 M 156 34 C 158 22,154 14,148 14 C 142 14,136 24,134 34 M 175 45 C 163 36,159 26,163 18 C 167 10,177 10,183 18 C 189 26,187 38,179 46 C 171 54,165 56,167 62 C 169 68,181 66,191 58 M 199 18 C 197 25,195 35,195 45 C 195 55,197 60,201 59 C 205 58,209 50,211 39 C 213 28,211 19,207 19 C 203 19,199 27,199 35 M 219 18 C 217 25,215 35,215 48 C 215 61,219 65,225 61 M 233 14 C 227 20,223 30,221 42 C 219 54,221 62,227 62 C 233 62,241 54,245 42 C 249 30,247 18,241 14 C 235 10,229 14,227 22 M 253 18 C 251 25,249 35,249 48 C 249 61,253 65,259 61 C 265 57,271 45,273 34 M 253 31 C 259 29,267 29,273 34 M 287 12 C 281 18,277 28,275 40 C 273 52,275 60,281 60" fill="none" stroke="#26302A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" opacity="0.85"/>
+                    </svg>
+                    <div className="agreement-authorised-name">Finley McDrury</div>
+                    <div className="agreement-authorised-title">Director, HomeTend Christchurch Limited</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 3: Signed — pay deposit ── */}
+        {step === 3 && (
+          <div className="modal-body modal-centered">
+            <div className="modal-success-icon">✓</div>
+            <h2 className="modal-title">Agreement signed</h2>
+            <p className="modal-sub">Your Service Agreement has been signed and will be emailed to {form.email} for your records.</p>
+            <div className="modal-summary-box">
+              <div className="modal-summary-row"><span>Deposit due today</span><strong>${deposit}</strong></div>
+              <div className="modal-summary-row"><span>Then {monthlyInstalment}/month × 11</span><span>Year one instalments</span></div>
+              <div className="modal-summary-row"><span>From year two</span><span>${total}/month</span></div>
+            </div>
+            <button className="btn-primary" style={{ width: '100%', marginTop: 24 }} onClick={handlePayDeposit}>
+              Pay ${deposit} deposit →
+            </button>
+            <p className="modal-stripe-note">Secure payment via Stripe. You'll receive a receipt immediately.</p>
+          </div>
+        )}
+
+        {/* ── STEP 4: Deposit paid — book first visit ── */}
+        {step === 4 && (
+          <div className="modal-body modal-centered">
+            <div className="modal-success-icon">🏠</div>
+            <h2 className="modal-title">Deposit received — let's book your first visit</h2>
+            <p className="modal-sub">Your first visit is a house wash. Pick a time that suits you and we'll take care of the rest.</p>
+            <button className="btn-primary" style={{ width: '100%', marginTop: 24 }}>
+              Book your house wash →
+            </button>
+            <p className="modal-stripe-note">You'll be taken to our scheduling tool to pick a date and time.</p>
+            <button className="btn-secondary" style={{ marginTop: 12 }} onClick={onClose}>
+              I'll book later — close
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [selected, setSelected] = useState(new Set(['roof', 'gutter', 'house-wash']));
   const [scrolled, setScrolled] = useState(false);
@@ -514,6 +886,7 @@ export default function App() {
   const [storeys, setStoreys] = useState(1);
   const [hvacOutlets, setHvacOutlets] = useState(1);
   const [activeTab, setActiveTab] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [frequencyByService, setFrequencyByService] = useState({
     roof: 'annual',
     gutter: 'annual',
@@ -1489,6 +1862,444 @@ export default function App() {
           to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ── MODAL ── */
+        .modal-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(38,48,42,0.7);
+          backdrop-filter: blur(4px);
+          z-index: 1000;
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          padding: 24px 16px;
+          overflow-y: auto;
+        }
+        .modal-sheet {
+          background: var(--paper);
+          border-radius: 20px;
+          width: 100%;
+          max-width: 680px;
+          position: relative;
+          box-shadow: 0 32px 80px rgba(0,0,0,0.35);
+          min-height: 200px;
+        }
+        .modal-close {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          background: var(--stone);
+          border: none;
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
+          cursor: pointer;
+          font-size: 14px;
+          color: var(--ink);
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .modal-steps {
+          display: flex;
+          gap: 0;
+          padding: 20px 24px;
+          border-bottom: 1px solid var(--line);
+          overflow-x: auto;
+        }
+        .modal-step {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          font-weight: 500;
+          color: #C9C2B2;
+          white-space: nowrap;
+          padding-right: 20px;
+        }
+        .modal-step:not(:last-child)::after {
+          content: '→';
+          margin-left: 8px;
+          color: var(--line);
+        }
+        .modal-step.active { color: var(--ink); }
+        .modal-step.done { color: var(--clay); }
+        .modal-step-dot {
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          background: var(--stone);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+          font-weight: 700;
+          flex-shrink: 0;
+        }
+        .modal-step.active .modal-step-dot { background: var(--ink); color: white; }
+        .modal-step.done .modal-step-dot { background: var(--clay); color: white; }
+        .modal-body {
+          padding: 28px 28px 32px;
+        }
+        .modal-body.modal-agreement {
+          padding: 0;
+          max-height: 75vh;
+          overflow-y: auto;
+        }
+        .modal-title {
+          font-family: 'Fraunces', serif;
+          font-size: 24px;
+          font-weight: 500;
+          margin: 0 0 8px;
+        }
+        .modal-sub {
+          font-size: 15px;
+          color: #4A5048;
+          margin: 0 0 24px;
+          line-height: 1.5;
+        }
+        .modal-centered {
+          text-align: center;
+        }
+        .modal-success-icon {
+          font-size: 40px;
+          margin-bottom: 16px;
+        }
+        .modal-summary-box {
+          background: var(--stone);
+          border-radius: 14px;
+          padding: 20px 24px;
+          margin-top: 20px;
+          text-align: left;
+        }
+        .modal-summary-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 8px 0;
+          font-size: 14px;
+          border-bottom: 1px solid var(--line);
+        }
+        .modal-summary-row:last-child { border-bottom: none; }
+        .modal-stripe-note {
+          font-size: 12px;
+          color: #8A8576;
+          margin-top: 12px;
+        }
+
+        /* ── FORM ── */
+        .form-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .form-field {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .form-field.form-full { grid-column: 1 / -1; }
+        .form-field label {
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          color: #8A8576;
+        }
+        .form-optional { font-weight: 400; text-transform: none; letter-spacing: 0; }
+        .form-field input {
+          border: 1.5px solid var(--line);
+          border-radius: 10px;
+          padding: 10px 14px;
+          font-size: 15px;
+          font-family: 'Inter', sans-serif;
+          color: var(--ink);
+          background: var(--paper);
+          outline: none;
+          transition: border-color 0.15s;
+        }
+        .form-field input:focus { border-color: var(--clay); }
+        .form-field input.error { border-color: #C44; }
+        .form-error { font-size: 12px; color: #C44; }
+        .form-radio-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-top: 2px;
+        }
+        .form-radio {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 14px;
+          cursor: pointer;
+        }
+        .form-radio input { width: auto; border: none; padding: 0; }
+
+        /* ── SERVICE AGREEMENT ── */
+        .agreement-doc {
+          padding: 32px 36px 40px;
+        }
+        .agreement-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 32px;
+          padding-bottom: 20px;
+          border-bottom: 2px solid var(--ink);
+        }
+        .agreement-logo {
+          font-family: 'Fraunces', serif;
+          font-size: 28px;
+          font-weight: 600;
+          color: var(--ink);
+        }
+        .agreement-meta {
+          text-align: right;
+          font-size: 12px;
+          color: #4A5048;
+          line-height: 1.7;
+        }
+        .agreement-title {
+          font-family: 'Fraunces', serif;
+          font-size: 22px;
+          font-weight: 500;
+          margin: 0 0 24px;
+          color: var(--ink);
+        }
+        .agreement-section { margin-bottom: 28px; }
+        .agreement-plan-summary {
+          background: var(--stone);
+          border-radius: 14px;
+          padding: 24px;
+          margin-bottom: 24px;
+        }
+        .agreement-plan-summary h2 {
+          font-family: 'Fraunces', serif;
+          font-size: 17px;
+          font-weight: 500;
+          margin: 0 0 16px;
+        }
+        .agreement-customer-details {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px 24px;
+          font-size: 13.5px;
+          margin-bottom: 20px;
+          color: #26302A;
+          line-height: 1.5;
+        }
+        .agreement-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 13.5px;
+          margin-bottom: 20px;
+        }
+        .agreement-table th {
+          text-align: left;
+          padding: 8px 12px;
+          background: var(--ink);
+          color: var(--paper);
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+        .agreement-table td {
+          padding: 8px 12px;
+          border-bottom: 1px solid var(--line);
+        }
+        .agreement-payment-summary {
+          border-top: 1.5px solid var(--line);
+          padding-top: 14px;
+        }
+        .agreement-payment-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 13.5px;
+          padding: 5px 0;
+        }
+        .agreement-payment-row.highlight {
+          font-weight: 700;
+          color: var(--clay-dark);
+          font-size: 15px;
+          padding: 8px 0;
+        }
+        .agreement-keypoints {
+          background: #FBF1EC;
+          border-left: 3px solid var(--clay);
+          border-radius: 0 10px 10px 0;
+          padding: 18px 20px;
+          margin-bottom: 28px;
+        }
+        .agreement-keypoints h3 {
+          font-family: 'Fraunces', serif;
+          font-size: 15px;
+          font-weight: 500;
+          margin: 0 0 12px;
+        }
+        .agreement-keypoints ul {
+          margin: 0;
+          padding-left: 18px;
+        }
+        .agreement-keypoints li {
+          font-size: 13.5px;
+          line-height: 1.6;
+          margin-bottom: 4px;
+          color: #3A4838;
+        }
+        .agreement-signature-block {
+          border: 1.5px solid var(--clay);
+          border-radius: 14px;
+          padding: 24px;
+          margin-bottom: 32px;
+          background: var(--paper);
+        }
+        .agreement-signature-block h2 {
+          font-family: 'Fraunces', serif;
+          font-size: 17px;
+          font-weight: 500;
+          margin: 0 0 6px;
+        }
+        .agreement-signature-block p {
+          font-size: 13px;
+          color: #4A5048;
+          margin: 0 0 16px;
+        }
+        .agreement-terms h2 {
+          font-family: 'Fraunces', serif;
+          font-size: 18px;
+          font-weight: 500;
+          margin: 0 0 16px;
+          padding-top: 24px;
+          border-top: 1px solid var(--line);
+        }
+        .agreement-terms h3 {
+          font-size: 14px;
+          font-weight: 700;
+          margin: 18px 0 6px;
+          color: var(--ink);
+        }
+        .agreement-terms p {
+          font-size: 13.5px;
+          line-height: 1.65;
+          color: #3A4838;
+          margin: 0 0 10px;
+        }
+        .agreement-authorised {
+          margin-top: 32px;
+          padding-top: 20px;
+          border-top: 1px solid var(--line);
+        }
+        .agreement-sig-svg {
+          width: 200px;
+          height: 40px;
+          display: block;
+          margin-bottom: 4px;
+        }
+        .agreement-authorised-name {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--ink);
+        }
+        .agreement-authorised-title {
+          font-size: 12px;
+          color: #8A8576;
+        }
+
+        /* ── SIGNATURE PAD ── */
+        .sig-wrap { }
+        .sig-mode-toggle {
+          display: flex;
+          gap: 0;
+          margin-bottom: 12px;
+          border: 1.5px solid var(--line);
+          border-radius: 10px;
+          overflow: hidden;
+          width: fit-content;
+        }
+        .sig-mode-btn {
+          padding: 8px 18px;
+          border: none;
+          background: var(--paper);
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          color: #8A8576;
+        }
+        .sig-mode-btn.active {
+          background: var(--ink);
+          color: var(--paper);
+        }
+        .sig-canvas-wrap {
+          position: relative;
+          margin-bottom: 12px;
+        }
+        .sig-canvas {
+          border: 1.5px solid var(--line);
+          border-radius: 10px;
+          display: block;
+          width: 100%;
+          height: 100px;
+          cursor: crosshair;
+          background: #FAFAF8;
+          touch-action: none;
+        }
+        .sig-hint {
+          position: absolute;
+          bottom: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 11px;
+          color: #C9C2B2;
+          pointer-events: none;
+        }
+        .sig-clear {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          font-size: 11px;
+          background: none;
+          border: 1px solid var(--line);
+          border-radius: 6px;
+          padding: 3px 8px;
+          cursor: pointer;
+          color: #8A8576;
+        }
+        .sig-type-wrap { margin-bottom: 12px; }
+        .sig-type-input {
+          width: 100%;
+          border: 1.5px solid var(--line);
+          border-radius: 10px;
+          padding: 10px 14px;
+          font-size: 15px;
+          font-family: 'Inter', sans-serif;
+          margin-bottom: 8px;
+          box-sizing: border-box;
+        }
+        .sig-type-preview {
+          font-family: 'Fraunces', serif;
+          font-style: italic;
+          font-size: 28px;
+          color: var(--ink);
+          padding: 8px 14px;
+          border-bottom: 1.5px solid var(--line);
+        }
+        .sig-confirm {
+          width: 100%;
+        }
+        .sig-confirm:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        @media (max-width: 600px) {
+          .form-grid { grid-template-columns: 1fr; }
+          .agreement-customer-details { grid-template-columns: 1fr; }
+          .agreement-doc { padding: 20px; }
+          .modal-body { padding: 20px; }
+        }
+
         footer {
           padding: 50px 6vw;
           display: flex;
@@ -1642,7 +2453,7 @@ export default function App() {
                 </ul>
               </>
             )}
-            <button className="btn-primary" style={{width:'100%',marginTop:16}}>Lock in this plan</button>
+            <button className="btn-primary" style={{width:'100%',marginTop:16}} onClick={() => setShowModal(true)}>Lock in this plan</button>
           </div>
         </div>
 
@@ -1752,6 +2563,16 @@ export default function App() {
         <span>HomeTend. © 2026</span>
         <span>Christchurch, NZ</span>
       </footer>
+
+      {showModal && (
+        <SignupModal
+          plan={selected}
+          total={total}
+          quote={quote}
+          frequencyByService={frequencyByService}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 }

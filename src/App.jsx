@@ -871,7 +871,10 @@ function SignupModal({ plan, total, quote, frequencyByService, onClose }) {
                 <h3>9. Privacy</h3>
                 <p>We collect your personal information for the purpose of delivering our services and processing payments. We will not sell or share your personal information with third parties except as required to deliver our services or as required by law. Our handling of your information is governed by the Privacy Act 2020.</p>
 
-                <h3>10. General</h3>
+                <h3>10. Pricing Accuracy and House Size</h3>
+                <p>Pricing is calculated based on the house size information you provide at the time of signing. HomeTend reserves the right to contact you to review and adjust your monthly rate if, upon visiting your property, it is evident that the house size selected does not accurately reflect the property. Any adjustment will be communicated to you in writing before taking effect, and you will have the opportunity to accept the revised rate or cancel your plan without penalty.</p>
+
+                <h3>11. General</h3>
                 <p>This agreement is governed by the laws of New Zealand. This agreement, together with your Plan Summary above, constitutes the entire agreement between us in relation to the services described.</p>
 
                 <div className="agreement-authorised">
@@ -923,7 +926,7 @@ function SignupModal({ plan, total, quote, frequencyByService, onClose }) {
 }
 
 export default function App() {
-  const [selected, setSelected] = useState(new Set(['roof', 'gutter', 'house-wash']));
+  const [selected, setSelected] = useState(new Set(['house-wash']));
   const [scrolled, setScrolled] = useState(false);
   const [bedrooms, setBedrooms] = useState('3');
   const [storeys, setStoreys] = useState(1);
@@ -931,8 +934,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [frequencyByService, setFrequencyByService] = useState({
-    roof: 'annual',
-    gutter: 'annual',
     'house-wash': 'annual',
   });
   const tabPanelRef = useRef(null);
@@ -1360,13 +1361,33 @@ export default function App() {
         .fold-pane-right {
           background: var(--paper);
         }
-        .fold-pane-label {
+        .fold-step-heading {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--clay-dark);
-          margin-bottom: 12px;
+          margin-bottom: 14px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid var(--line);
+        }
+        .fold-service-row-main {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+        }
+        .fold-hvac-inline {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          flex-shrink: 0;
+        }
+        .fold-hvac-label {
+          font-size: 11px;
+          color: #8A8576;
+          font-weight: 600;
+          white-space: nowrap;
         }
         .fold-services-list {
           display: flex;
@@ -2419,6 +2440,7 @@ export default function App() {
         {/* Pane 1: Headline + property inputs */}
         <div className="fold-pane fold-pane-hero">
           <h1 className="fold-headline">Your home is your biggest asset,<br/><em>let us tend to your maintenance needs.</em></h1>
+          <div className="fold-step-heading">Step 1 — Your house size</div>
           <div className="fold-inputs">
             <div className="fold-input-group">
               <label>Bedrooms</label>
@@ -2442,25 +2464,12 @@ export default function App() {
                 ))}
               </div>
             </div>
-            {hasHvac && (
-              <div className="fold-input-group">
-                <label>HVAC units</label>
-                <div className="pill-group">
-                  {[1,2,3,4].map((n) => (
-                    <button key={n} type="button"
-                      className={`pill ${hvacOutlets === n ? 'active' : ''}`}
-                      onClick={() => setHvacOutlets(n)}
-                    >{n}{n===4?'+':''}</button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
         {/* Pane 2: Services */}
         <div className="fold-pane fold-pane-services">
-          <div className="fold-pane-label">Select services</div>
+          <div className="fold-step-heading">Step 2 — Select services</div>
           <div className="fold-services-list">
             {SERVICES.map((s) => {
               const isActive = selected.has(s.id);
@@ -2468,10 +2477,23 @@ export default function App() {
               const currentFreq = frequencyByService[s.id] || 'annual';
               return (
                 <div key={s.id} className={`fold-service-row ${isActive ? 'active' : ''}`}>
-                  <button type="button" className="fold-service-toggle" onClick={() => toggle(s.id)}>
-                    <span className={`fold-check ${isActive ? 'checked' : ''}`}>{isActive ? '✓' : '+'}</span>
-                    <span className="fold-service-name">{s.name}</span>
-                  </button>
+                  <div className="fold-service-row-main">
+                    <button type="button" className="fold-service-toggle" onClick={() => toggle(s.id)}>
+                      <span className={`fold-check ${isActive ? 'checked' : ''}`}>{isActive ? '✓' : '+'}</span>
+                      <span className="fold-service-name">{s.name}</span>
+                    </button>
+                    {isActive && s.id === 'hvac' && (
+                      <div className="fold-hvac-inline" onClick={e => e.stopPropagation()}>
+                        <span className="fold-hvac-label">Units:</span>
+                        {[1,2,3,4].map((n) => (
+                          <button key={n} type="button"
+                            className={`mini-pill ${hvacOutlets === n ? 'active' : ''}`}
+                            onClick={() => setHvacOutlets(n)}
+                          >{n}{n===4?'+':''}</button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {isActive && (
                     <div className="fold-freq-pills">
                       {allowed.map((f) => (
@@ -2488,8 +2510,9 @@ export default function App() {
           </div>
         </div>
 
-        {/* Pane 3: Live price + carousel */}
+        {/* Pane 3: Live price */}
         <div className="fold-pane fold-pane-right">
+          <div className="fold-step-heading">Step 3 — Confirm your plan</div>
           <div className="fold-price-card">
             <span className="fold-price-label">Your plan — live</span>
             {selected.size === 0 ? (

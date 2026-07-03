@@ -235,45 +235,275 @@ function SeasonalWheel() {
   );
 }
 
-const TESTIMONIALS = [
-  { name: 'Sarah M.', suburb: 'Fendalton', stars: 5, text: 'I honestly didn\'t realise how much mental energy I was spending worrying about the gutters, the moss on the roof, all of it. HomeTend just made it disappear. The photo after each visit is such a small thing but it means so much.' },
-  { name: 'Rachel T.', suburb: 'Merivale', stars: 5, text: 'The crew turned up exactly when they said they would, did an incredible job on the house wash and driveway, and left everything spotless. First time I\'ve had tradespeople I didn\'t have to chase. Worth every cent.' },
-  { name: 'Donna K.', suburb: 'St Albans', stars: 5, text: 'I was a bit sceptical at first — a subscription for home maintenance felt unusual. But after the first visit I was completely sold. They noticed a loose gutter bracket I hadn\'t even seen and flagged it before it became a problem. That\'s the difference.' },
-  { name: 'Jo W.', suburb: 'Sumner', stars: 5, text: 'Managing the house on my own after my separation was overwhelming. HomeTend genuinely took one big thing off my plate. The windows look amazing, the roof is clear, and I didn\'t have to organise a thing.' },
-  { name: 'Amanda B.', suburb: 'Halswell', stars: 5, text: 'Reliable, professional, and the boys are lovely. Never felt uncomfortable having them around the property. My neighbour noticed how good the place looked and asked for their number.' },
-  { name: 'Lisa F.', suburb: 'Riccarton', stars: 5, text: 'Set it up in about two minutes online, got a confirmation text the same day, and they were here the following week. The HVAC hasn\'t run this quietly in years. Genuinely impressed.' },
+const JOBS = [
+  {
+    service: 'House Wash',
+    location: 'Fendalton',
+    time: '9:47 AM',
+    date: 'Tue 14 Jan',
+    review: { name: 'Sarah M.', stars: 5, text: 'HomeTend just made it disappear. The photo after each visit means so much.' },
+    photo: (
+      <svg viewBox="0 0 160 120" className="phone-photo">
+        <defs>
+          <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#C8DBE8"/><stop offset="100%" stopColor="#E8F0F5"/></linearGradient>
+          <filter id="warm"><feColorMatrix type="matrix" values="1.1 0.05 0 0 0.02  0 1.0 0 0 0  0 0 0.9 0 0  0 0 0 1 0"/></filter>
+        </defs>
+        <rect width="160" height="120" fill="url(#sky1)"/>
+        {/* lawn */}
+        <rect y="85" width="160" height="35" fill="#7A9E6A"/>
+        {/* driveway */}
+        <polygon points="50,120 110,120 100,85 60,85" fill="#C8C0B0"/>
+        {/* house body */}
+        <rect x="20" y="45" width="120" height="45" fill="#F5F0E8"/>
+        {/* roof */}
+        <polygon points="10,45 80,12 150,45" fill="#6B5A4E"/>
+        {/* windows gleaming */}
+        <rect x="35" y="58" width="28" height="22" fill="#BFD8E8" opacity="0.9"/>
+        <rect x="97" y="58" width="28" height="22" fill="#BFD8E8" opacity="0.9"/>
+        <line x1="49" y1="58" x2="49" y2="80" stroke="white" strokeWidth="1.5" opacity="0.6"/>
+        <line x1="35" y1="69" x2="63" y2="69" stroke="white" strokeWidth="1.5" opacity="0.6"/>
+        <line x1="111" y1="58" x2="111" y2="80" stroke="white" strokeWidth="1.5" opacity="0.6"/>
+        <line x1="97" y1="69" x2="125" y2="69" stroke="white" strokeWidth="1.5" opacity="0.6"/>
+        {/* door */}
+        <rect x="68" y="65" width="24" height="25" fill="#B5603F"/>
+        {/* gutter highlight — clean */}
+        <rect x="18" y="44" width="124" height="4" fill="#A8B5A0" opacity="0.8"/>
+        {/* warm photo overlay */}
+        <rect width="160" height="120" fill="#B5603F" opacity="0.06"/>
+        {/* vignette */}
+        <radialGradient id="vig1" cx="50%" cy="50%" r="70%"><stop offset="60%" stopColor="transparent"/><stop offset="100%" stopColor="rgba(0,0,0,0.3)"/></radialGradient>
+        <rect width="160" height="120" fill="url(#vig1)"/>
+      </svg>
+    ),
+  },
+  {
+    service: 'Gutter Clean',
+    location: 'Merivale',
+    time: '11:23 AM',
+    date: 'Thu 23 Jan',
+    review: { name: 'Rachel T.', stars: 5, text: 'First time I\'ve had tradespeople I didn\'t have to chase. Worth every cent.' },
+    photo: (
+      <svg viewBox="0 0 160 120" className="phone-photo">
+        <defs><linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#D4E4EE"/><stop offset="100%" stopColor="#EBF2F7"/></linearGradient></defs>
+        <rect width="160" height="120" fill="url(#sky2)"/>
+        {/* close-up gutter angle shot */}
+        {/* fascia board */}
+        <rect x="0" y="28" width="160" height="18" fill="#E8E0D0"/>
+        {/* gutter channel — clean */}
+        <rect x="0" y="46" width="160" height="14" fill="#8A9E8A" rx="3"/>
+        <rect x="2" y="48" width="156" height="10" fill="#A8B8A8" rx="2"/>
+        {/* water droplet catching light — clean drain */}
+        <ellipse cx="80" cy="53" rx="4" ry="2" fill="#BFD8E8" opacity="0.8"/>
+        {/* roof tiles above */}
+        <rect x="0" y="0" width="160" height="30" fill="#7A6A5E"/>
+        {/* tile lines */}
+        {[0,20,40,60,80,100,120,140].map(x => <line key={x} x1={x} y1="0" x2={x} y2="30" stroke="#6A5A4E" strokeWidth="1" opacity="0.5"/>)}
+        {[0,10,20].map(y => <line key={y} x1="0" y1={y} x2="160" y2={y} stroke="#6A5A4E" strokeWidth="1" opacity="0.3"/>)}
+        {/* downpipe */}
+        <rect x="140" y="46" width="12" height="74" fill="#9AA89A"/>
+        {/* subtle warmth */}
+        <rect width="160" height="120" fill="#C8A860" opacity="0.05"/>
+        <radialGradient id="vig2" cx="50%" cy="50%" r="70%"><stop offset="60%" stopColor="transparent"/><stop offset="100%" stopColor="rgba(0,0,0,0.25)"/></radialGradient>
+        <rect width="160" height="120" fill="url(#vig2)"/>
+      </svg>
+    ),
+  },
+  {
+    service: 'Roof Wash',
+    location: 'St Albans',
+    time: '2:15 PM',
+    date: 'Fri 7 Feb',
+    review: { name: 'Donna K.', stars: 5, text: 'They noticed a loose gutter bracket I hadn\'t even seen. That\'s the difference.' },
+    photo: (
+      <svg viewBox="0 0 160 120" className="phone-photo">
+        <defs><linearGradient id="sky3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#B8CCE0"/><stop offset="100%" stopColor="#D8E8F0"/></linearGradient></defs>
+        <rect width="160" height="120" fill="url(#sky3)"/>
+        {/* looking down on clean roof tiles */}
+        {/* tile grid — clean dark tiles */}
+        {Array.from({length:7}).map((_,row) =>
+          Array.from({length:9}).map((_,col) => (
+            <rect key={`${row}-${col}`}
+              x={col*20 - (row%2)*10} y={row*18}
+              width="19" height="16" rx="1"
+              fill={row%2===0 ? '#5A4E44' : '#52463C'}
+              opacity={0.85 + (col%3)*0.05}
+            />
+          ))
+        )}
+        {/* ridge line at top */}
+        <rect x="0" y="0" width="160" height="6" fill="#3E3430"/>
+        {/* no moss — clean tiles gleam slightly */}
+        <rect width="160" height="120" fill="#E8F0F5" opacity="0.08"/>
+        <radialGradient id="vig3" cx="50%" cy="50%" r="70%"><stop offset="60%" stopColor="transparent"/><stop offset="100%" stopColor="rgba(0,0,0,0.3)"/></radialGradient>
+        <rect width="160" height="120" fill="url(#vig3)"/>
+      </svg>
+    ),
+  },
+  {
+    service: 'Window Clean',
+    location: 'Sumner',
+    time: '10:02 AM',
+    date: 'Wed 19 Mar',
+    review: { name: 'Jo W.', stars: 5, text: 'The windows look amazing, the roof is clear, and I didn\'t have to organise a thing.' },
+    photo: (
+      <svg viewBox="0 0 160 120" className="phone-photo">
+        <defs>
+          <linearGradient id="sky4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#B0CCE0"/><stop offset="100%" stopColor="#D0E8F8"/></linearGradient>
+          <linearGradient id="refl" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#C8E0F0" stopOpacity="0.9"/><stop offset="60%" stopColor="#E8F4FF" stopOpacity="0.7"/><stop offset="100%" stopColor="#F0F8FF" stopOpacity="0.5"/></linearGradient>
+        </defs>
+        <rect width="160" height="120" fill="#E8E0D4"/>
+        {/* window frame */}
+        <rect x="20" y="10" width="120" height="100" fill="#D0C8B8" rx="2"/>
+        {/* panes */}
+        <rect x="24" y="14" width="54" height="44" fill="url(#refl)" rx="1"/>
+        <rect x="82" y="14" width="54" height="44" fill="url(#refl)" rx="1"/>
+        <rect x="24" y="62" width="54" height="44" fill="url(#refl)" rx="1"/>
+        <rect x="82" y="62" width="54" height="44" fill="url(#refl)" rx="1"/>
+        {/* sky reflection */}
+        <ellipse cx="45" cy="28" rx="20" ry="10" fill="url(#sky4)" opacity="0.6"/>
+        <ellipse cx="103" cy="28" rx="20" ry="10" fill="url(#sky4)" opacity="0.6"/>
+        {/* gleam line */}
+        <line x1="28" y1="18" x2="60" y2="50" stroke="white" strokeWidth="2" opacity="0.5" strokeLinecap="round"/>
+        <line x1="86" y1="18" x2="118" y2="50" stroke="white" strokeWidth="2" opacity="0.5" strokeLinecap="round"/>
+        <rect width="160" height="120" fill="#D4A860" opacity="0.04"/>
+        <radialGradient id="vig4" cx="50%" cy="50%" r="70%"><stop offset="60%" stopColor="transparent"/><stop offset="100%" stopColor="rgba(0,0,0,0.2)"/></radialGradient>
+        <rect width="160" height="120" fill="url(#vig4)"/>
+      </svg>
+    ),
+  },
+  {
+    service: 'Driveway Clean',
+    location: 'Halswell',
+    time: '3:40 PM',
+    date: 'Sat 29 Mar',
+    review: { name: 'Amanda B.', stars: 5, text: 'My neighbour noticed how good the place looked and asked for their number.' },
+    photo: (
+      <svg viewBox="0 0 160 120" className="phone-photo">
+        <defs><linearGradient id="conc" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#D8D0C0"/><stop offset="100%" stopColor="#C8C0B0"/></linearGradient></defs>
+        <rect width="160" height="120" fill="url(#conc)"/>
+        {/* clean concrete panels */}
+        {[0,40,80].map(y => <line key={y} x1="0" y1={y} x2="160" y2={y} stroke="#B8B0A0" strokeWidth="2"/>)}
+        {[0,53,106,160].map(x => <line key={x} x1={x} y1="0" x2={x} y2="120" stroke="#B8B0A0" strokeWidth="1.5"/>)}
+        {/* sharp shadow from fence — late afternoon */}
+        <polygon points="0,60 0,120 40,120 0,60" fill="rgba(0,0,0,0.12)"/>
+        {/* wet gleam where just washed */}
+        <ellipse cx="100" cy="70" rx="40" ry="20" fill="white" opacity="0.15"/>
+        {/* gate post edge */}
+        <rect x="0" y="0" width="8" height="120" fill="#8A8070"/>
+        {/* subtle warmth */}
+        <rect width="160" height="120" fill="#C89040" opacity="0.08"/>
+        <radialGradient id="vig5" cx="50%" cy="50%" r="70%"><stop offset="60%" stopColor="transparent"/><stop offset="100%" stopColor="rgba(0,0,0,0.25)"/></radialGradient>
+        <rect width="160" height="120" fill="url(#vig5)"/>
+      </svg>
+    ),
+  },
+  {
+    service: 'HVAC Service',
+    location: 'Riccarton',
+    time: '1:08 PM',
+    date: 'Mon 7 Apr',
+    review: { name: 'Lisa F.', stars: 5, text: 'The HVAC hasn\'t run this quietly in years. Genuinely impressed.' },
+    photo: (
+      <svg viewBox="0 0 160 120" className="phone-photo">
+        <rect width="160" height="120" fill="#E8E4E0"/>
+        {/* wall */}
+        <rect width="160" height="120" fill="#F0ECE8"/>
+        {/* HVAC unit on wall */}
+        <rect x="20" y="30" width="120" height="50" fill="#E0DCD8" rx="6"/>
+        <rect x="24" y="34" width="112" height="42" fill="#D8D4D0" rx="4"/>
+        {/* vents — clean */}
+        {[0,1,2,3,4,5,6].map(i => (
+          <rect key={i} x="28" y={38+i*5} width="80" height="3" fill="#C8C4C0" rx="1.5"/>
+        ))}
+        {/* brand panel */}
+        <rect x="110" y="38" width="22" height="30" fill="#A8B5A0" rx="2"/>
+        <circle cx="121" cy="53" r="6" fill="#26302A" opacity="0.2"/>
+        <circle cx="121" cy="53" r="3" fill="#26302A" opacity="0.4"/>
+        {/* clean filter held up — subtle */}
+        <rect x="28" y="85" width="60" height="25" fill="#C8C4B8" rx="2" opacity="0.6"/>
+        <text x="58" y="100" textAnchor="middle" fontSize="8" fill="#8A8680" fontFamily="Arial">Clean ✓</text>
+        <rect width="160" height="120" fill="#A8B060" opacity="0.04"/>
+        <radialGradient id="vig6" cx="50%" cy="50%" r="70%"><stop offset="60%" stopColor="transparent"/><stop offset="100%" stopColor="rgba(0,0,0,0.2)"/></radialGradient>
+        <rect width="160" height="120" fill="url(#vig6)"/>
+      </svg>
+    ),
+  },
+  {
+    service: 'Spider Control',
+    location: 'Papanui',
+    time: '8:55 AM',
+    date: 'Tue 15 Apr',
+    review: { name: 'Karen S.', stars: 5, text: 'Eaves are completely clear. They did the whole perimeter and even got under the deck. Brilliant.' },
+    photo: (
+      <svg viewBox="0 0 160 120" className="phone-photo">
+        <defs><linearGradient id="sky7" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#C0D0E0"/><stop offset="100%" stopColor="#E0ECF4"/></linearGradient></defs>
+        <rect width="160" height="120" fill="url(#sky7)"/>
+        {/* eave soffit — looking up at clean corner */}
+        <rect x="0" y="0" width="160" height="50" fill="#E8E4DC"/>
+        {/* fascia */}
+        <rect x="0" y="48" width="160" height="10" fill="#D8D0C4"/>
+        {/* wall below */}
+        <rect x="0" y="58" width="160" height="62" fill="#F0EDE6"/>
+        {/* corner join — perfectly clean */}
+        <line x1="80" y1="0" x2="80" y2="58" stroke="#C8C0B4" strokeWidth="2"/>
+        {/* no webs — clean */}
+        <circle cx="82" cy="10" r="2" fill="#E0DCD4" opacity="0.5"/>
+        {/* morning light shaft */}
+        <polygon points="0,0 60,0 0,60" fill="white" opacity="0.08"/>
+        {/* treated surface sheen */}
+        <rect x="0" y="0" width="160" height="58" fill="#F8F4F0" opacity="0.12"/>
+        <rect width="160" height="120" fill="#C0A860" opacity="0.05"/>
+        <radialGradient id="vig7" cx="50%" cy="50%" r="70%"><stop offset="60%" stopColor="transparent"/><stop offset="100%" stopColor="rgba(0,0,0,0.2)"/></radialGradient>
+        <rect width="160" height="120" fill="url(#vig7)"/>
+      </svg>
+    ),
+  },
 ];
 
-function TestimonialCarousel() {
-  const [idx, setIdx] = useState(0);
-  const total = TESTIMONIALS.length;
-
-  useEffect(() => {
-    const timer = setInterval(() => setIdx((i) => (i + 1) % total), 5000);
-    return () => clearInterval(timer);
-  }, [total]);
-
-  const prev = () => setIdx((i) => (i - 1 + total) % total);
-  const next = () => setIdx((i) => (i + 1) % total);
-  const t = TESTIMONIALS[idx];
+function FilmReel() {
+  const [paused, setPaused] = useState(false);
+  const items = [...JOBS, ...JOBS]; // doubled for seamless loop
 
   return (
-    <section className="carousel-section">
-      <div className="carousel-inner">
-        <div className="carousel-stars">{'★'.repeat(t.stars)}</div>
-        <blockquote className="carousel-quote">"{t.text}"</blockquote>
-        <div className="carousel-author">{t.name} · {t.suburb}</div>
-        <div className="carousel-controls">
-          <button className="carousel-btn" onClick={prev}>←</button>
-          <div className="carousel-dots">
-            {TESTIMONIALS.map((_, i) => (
-              <button key={i} className={`carousel-dot ${i === idx ? 'active' : ''}`} onClick={() => setIdx(i)} />
-            ))}
-          </div>
-          <button className="carousel-btn" onClick={next}>→</button>
+    <div
+      className="film-reel-wrap"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Top sprocket strip */}
+      <div className="film-sprockets">
+        {Array(28).fill(0).map((_, i) => <div key={i} className="sprocket-hole"/>)}
+      </div>
+
+      {/* Scrolling frames */}
+      <div className="film-track-outer">
+        <div className={`film-track ${paused ? 'paused' : ''}`}>
+          {items.map((job, i) => (
+            <div key={i} className="film-frame">
+              {/* Phone photo */}
+              <div className="phone-wrap">
+                {job.photo}
+                {/* Camera UI overlay */}
+                <div className="phone-timestamp">{job.date} · {job.time}</div>
+                <div className="phone-location">📍 {job.location}</div>
+                <div className="phone-service-tag">{job.service}</div>
+              </div>
+              {/* Caption below */}
+              <div className="film-caption">
+                <div className="film-stars">{'★'.repeat(job.review.stars)}</div>
+                <p className="film-quote-text">"{job.review.text}"</p>
+                <div className="film-reviewer">— {job.review.name}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    </section>
+
+      {/* Bottom sprocket strip */}
+      <div className="film-sprockets">
+        {Array(28).fill(0).map((_, i) => <div key={i} className="sprocket-hole"/>)}
+      </div>
+    </div>
   );
 }
 
@@ -1131,101 +1361,126 @@ export default function App() {
         .final-cta h2 { color: var(--paper); font-size: clamp(32px, 5vw, 50px); max-width: 18ch; margin: 0 auto; }
         .final-cta p { color: rgba(252,251,248,0.7); margin: 20px auto 36px; max-width: 44ch; font-size: 17px; }
 
-        /* FOLD CAROUSEL (right pane version) */
-        .fold-carousel {
-          margin-top: 24px;
-          border-top: 1px solid rgba(255,255,255,0.1);
-          padding-top: 24px;
-        }
-        .fold-carousel .carousel-section {
-          background: transparent;
-          padding: 0;
-        }
-        .fold-carousel .carousel-quote {
-          font-size: 14px;
-          color: rgba(252,251,248,0.85);
-        }
-        .fold-carousel .carousel-stars {
-          font-size: 15px;
-          margin-bottom: 10px;
-        }
-        .fold-carousel .carousel-author {
-          margin-bottom: 14px;
-          color: var(--sage);
-        }
-        .fold-carousel .carousel-btn {
-          background: rgba(255,255,255,0.08);
-        }
-
         /* NAV active tab */
         .nav-links li.active { opacity: 1; }
 
-        /* CAROUSEL */
-        .carousel-section {
-          background: var(--ink);
-          padding: 56px 6vw;
+        /* FILM REEL */
+        .film-reel-wrap {
+          background: #1A1F1C;
+          overflow: hidden;
+          border-top: 1px solid #2E3830;
+          border-bottom: 1px solid #2E3830;
         }
-        .carousel-inner {
-          max-width: 720px;
-          margin: 0 auto;
+        .film-sprockets {
+          display: flex;
+          gap: 0;
+          padding: 4px 0;
+          background: #111614;
+        }
+        .sprocket-hole {
+          width: 14px;
+          height: 10px;
+          min-width: 14px;
+          background: #1A1F1C;
+          border-radius: 2px;
+          margin: 2px 6px;
+          border: 1px solid #2A2F2C;
+        }
+        .film-track-outer {
+          overflow: hidden;
+          padding: 20px 0;
+        }
+        .film-track {
+          display: flex;
+          gap: 24px;
+          width: max-content;
+          animation: filmScroll 38s linear infinite;
+        }
+        .film-track.paused {
+          animation-play-state: paused;
+        }
+        @keyframes filmScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .film-frame {
+          width: 200px;
+          flex-shrink: 0;
+          cursor: default;
+        }
+        .phone-wrap {
+          position: relative;
+          width: 160px;
+          margin: 0 auto 12px;
+          border-radius: 10px;
+          overflow: hidden;
+          box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 0 1.5px rgba(255,255,255,0.08);
+        }
+        .phone-photo {
+          display: block;
+          width: 100%;
+          height: auto;
+        }
+        .phone-timestamp {
+          position: absolute;
+          bottom: 28px;
+          left: 8px;
+          font-size: 9px;
+          color: rgba(255,255,255,0.85);
+          font-family: 'Inter', sans-serif;
+          font-weight: 600;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+          letter-spacing: 0.02em;
+        }
+        .phone-location {
+          position: absolute;
+          bottom: 16px;
+          left: 8px;
+          font-size: 9px;
+          color: rgba(255,255,255,0.85);
+          font-family: 'Inter', sans-serif;
+          font-weight: 500;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+        }
+        .phone-service-tag {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          background: var(--clay);
+          color: white;
+          font-size: 9px;
+          font-weight: 700;
+          padding: 3px 7px;
+          border-radius: 999px;
+          font-family: 'Inter', sans-serif;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
+        }
+        .film-caption {
           text-align: center;
+          padding: 0 8px;
         }
-        .carousel-stars {
+        .film-stars {
           color: var(--clay);
-          font-size: 22px;
-          letter-spacing: 3px;
-          margin-bottom: 20px;
+          font-size: 12px;
+          letter-spacing: 2px;
+          margin-bottom: 6px;
         }
-        .carousel-quote {
+        .film-quote-text {
           font-family: 'Fraunces', serif;
-          font-size: clamp(17px, 2.5vw, 22px);
           font-style: italic;
-          color: var(--paper);
-          line-height: 1.55;
-          margin: 0 0 20px;
-          font-weight: 400;
+          font-size: 12px;
+          line-height: 1.5;
+          color: rgba(252,251,248,0.8);
+          margin: 0 0 6px;
         }
-        .carousel-author {
-          font-size: 13px;
+        .film-reviewer {
+          font-size: 10px;
           color: var(--sage);
           font-weight: 600;
           letter-spacing: 0.04em;
           text-transform: uppercase;
-          margin-bottom: 28px;
         }
-        .carousel-controls {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 16px;
-        }
-        .carousel-btn {
-          background: rgba(255,255,255,0.1);
-          border: none;
-          color: var(--paper);
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          cursor: pointer;
-          font-size: 16px;
-          transition: background 0.2s;
-        }
-        .carousel-btn:hover { background: rgba(255,255,255,0.2); }
-        .carousel-dots {
-          display: flex;
-          gap: 8px;
-        }
-        .carousel-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          border: none;
-          background: rgba(255,255,255,0.3);
-          cursor: pointer;
-          transition: background 0.2s;
-          padding: 0;
-        }
-        .carousel-dot.active { background: var(--clay); }
 
         /* TAB PANELS */
         .tab-panel {
@@ -1391,14 +1646,12 @@ export default function App() {
             )}
             <button className="btn-primary" style={{width:'100%',marginTop:16}}>Lock in this plan</button>
           </div>
-
-          {/* Vertical carousel below price card */}
-          <div className="fold-carousel">
-            <TestimonialCarousel />
-          </div>
         </div>
 
       </section>
+
+      {/* FILM REEL — full width between configurator and tabs */}
+      <FilmReel />
 
       {/* TAB PANELS */}
       <div ref={tabPanelRef}>

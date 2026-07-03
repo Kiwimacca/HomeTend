@@ -832,8 +832,8 @@ export default function App() {
           border: 1.5px solid var(--line);
           background: var(--paper);
           border-radius: 999px;
-          padding: 5px 11px;
-          font-size: 12px;
+          padding: 3px 9px;
+          font-size: 11px;
           font-weight: 600;
           cursor: pointer;
           color: var(--ink);
@@ -928,10 +928,9 @@ export default function App() {
           gap: 0;
           max-width: 1400px;
           margin: 0 auto;
-          min-height: calc(100vh - 70px);
         }
         .fold-pane {
-          padding: 36px 28px;
+          padding: 24px 22px;
           display: flex;
           flex-direction: column;
         }
@@ -942,11 +941,9 @@ export default function App() {
         .fold-pane-services {
           background: var(--stone);
           border-right: 1px solid var(--line);
-          overflow-y: auto;
         }
         .fold-pane-right {
           background: var(--ink);
-          overflow-y: auto;
         }
         .fold-pane-label {
           font-size: 11px;
@@ -954,18 +951,17 @@ export default function App() {
           letter-spacing: 0.06em;
           text-transform: uppercase;
           color: #8A8576;
-          margin-bottom: 16px;
+          margin-bottom: 12px;
         }
         .fold-services-list {
           display: flex;
           flex-direction: column;
           gap: 0;
-          flex: 1;
         }
         .fold-headline {
-          font-size: clamp(28px, 4vw, 44px);
-          line-height: 1.1;
-          margin: 0 0 28px;
+          font-size: clamp(20px, 2.8vw, 32px);
+          line-height: 1.15;
+          margin: 0 0 18px;
         }
         .fold-headline em {
           font-style: italic;
@@ -973,18 +969,18 @@ export default function App() {
         }
         .fold-inputs {
           display: flex;
-          gap: 24px;
-          margin-bottom: 16px;
+          gap: 18px;
+          margin-bottom: 12px;
           flex-wrap: wrap;
         }
         .fold-input-group label {
           display: block;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.05em;
           text-transform: uppercase;
           color: #8A8576;
-          margin-bottom: 8px;
+          margin-bottom: 6px;
         }
         .fold-services-grid {
           display: grid;
@@ -1002,8 +998,8 @@ export default function App() {
           100% { box-shadow: 0 0 0 0 rgba(181,96,63,0); }
         }
         .fold-service-row {
-          border-radius: 10px;
-          padding: 6px 10px;
+          border-radius: 8px;
+          padding: 4px 8px;
           background: var(--stone);
         }
         .fold-service-row.active {
@@ -1012,7 +1008,7 @@ export default function App() {
         .fold-service-toggle {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 8px;
           background: none;
           border: none;
           cursor: pointer;
@@ -1021,14 +1017,14 @@ export default function App() {
           padding: 0;
         }
         .fold-check {
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
           border-radius: 50%;
           border: 2px solid var(--clay);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 700;
           flex-shrink: 0;
           transition: all 0.15s;
@@ -1043,24 +1039,26 @@ export default function App() {
           animation: none;
         }
         .fold-service-name {
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 500;
           color: var(--ink);
         }
         .fold-freq-pills {
           display: flex;
-          gap: 6px;
+          gap: 5px;
           flex-wrap: wrap;
-          margin-top: 6px;
-          margin-left: 30px;
+          margin-top: 4px;
+          margin-left: 26px;
+          margin-bottom: 4px;
         }
         .fold-addon {
           display: flex;
           align-items: center;
-          gap: 6px;
-          margin-top: 5px;
-          margin-left: 30px;
-          font-size: 12px;
+          gap: 5px;
+          margin-top: 4px;
+          margin-left: 26px;
+          margin-bottom: 4px;
+          font-size: 11px;
           color: #8A8576;
           font-weight: 600;
         }
@@ -1072,74 +1070,74 @@ export default function App() {
           padding: 0;
         }
         .fold-price-label {
-          font-size: 11px;
+          font-size: 10px;
           opacity: 0.6;
           font-weight: 700;
           letter-spacing: 0.06em;
           text-transform: uppercase;
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: 10px;
         }
         .fold-price-amount {
           font-family: 'Fraunces', serif;
-          font-size: 52px;
-          margin: 8px 0 4px;
+          font-size: 44px;
+          margin: 6px 0 4px;
           line-height: 1;
         }
-        .fold-price-amount span { font-size: 16px; opacity: 0.65; }
+        .fold-price-amount span { font-size: 14px; opacity: 0.65; }
         .fold-price-empty-state {
-          font-size: 14px;
+          font-size: 13px;
           opacity: 0.55;
-          padding: 20px 0;
+          padding: 16px 0;
           text-align: center;
         }
         .fold-price-row-hero {
           display: flex;
           align-items: center;
-          gap: 12px;
-          margin: 14px 0 10px;
+          gap: 8px;
+          margin: 10px 0 8px;
         }
         .fold-price-block {
           flex: 1;
           background: rgba(255,255,255,0.08);
-          border-radius: 12px;
-          padding: 12px 14px;
+          border-radius: 10px;
+          padding: 10px 12px;
         }
         .fold-price-block-label {
           display: block;
-          font-size: 11px;
+          font-size: 10px;
           opacity: 0.6;
           font-weight: 600;
           letter-spacing: 0.04em;
           text-transform: uppercase;
-          margin-bottom: 6px;
+          margin-bottom: 4px;
         }
         .fold-price-block-amount {
           font-family: 'Fraunces', serif;
-          font-size: 28px;
+          font-size: 24px;
           font-weight: 500;
           line-height: 1;
         }
-        .fold-price-block-mo { font-size: 14px; opacity: 0.65; }
+        .fold-price-block-mo { font-size: 12px; opacity: 0.65; }
         .fold-price-divider {
-          font-size: 12px;
+          font-size: 11px;
           opacity: 0.5;
           font-weight: 600;
           flex-shrink: 0;
         }
         .fold-price-yr2 {
-          font-size: 12.5px;
+          font-size: 11.5px;
           opacity: 0.7;
-          margin-bottom: 16px;
-          padding-bottom: 16px;
+          margin-bottom: 10px;
+          padding-bottom: 10px;
           border-bottom: 1px solid rgba(255,255,255,0.1);
-          line-height: 1.5;
+          line-height: 1.45;
         }
         .fold-price-yr2 strong { opacity: 1; }
         .fold-price-note {
-          font-size: 12px;
+          font-size: 11px;
           opacity: 0.55;
-          margin-bottom: 20px;
+          margin-bottom: 12px;
         }
         .fold-price-list {
           list-style: none;
@@ -1150,15 +1148,15 @@ export default function App() {
         .fold-price-list li {
           display: flex;
           justify-content: space-between;
-          padding: 9px 0;
+          padding: 6px 0;
           border-bottom: 1px solid rgba(255,255,255,0.08);
-          font-size: 13px;
+          font-size: 12px;
         }
-        .fold-price-freq { opacity: 0.5; font-size: 12px; }
+        .fold-price-freq { opacity: 0.5; font-size: 11px; }
         .fold-price-empty { opacity: 0.5; justify-content: center !important; }
 
         @media (max-width: 900px) {
-          .above-fold { grid-template-columns: 1fr; min-height: auto; }
+          .above-fold { grid-template-columns: 1fr; }
           .fold-pane { border-right: none; border-bottom: 1px solid var(--line); }
           .fold-pane-right { border-bottom: none; }
           .fold-services-grid { grid-template-columns: 1fr; }
@@ -1182,15 +1180,15 @@ export default function App() {
         }
         .pill-group {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           flex-wrap: wrap;
         }
         .pill {
           border: 1.5px solid var(--line);
           background: var(--paper);
           border-radius: 999px;
-          padding: 8px 16px;
-          font-size: 14px;
+          padding: 6px 13px;
+          font-size: 12px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.15s;

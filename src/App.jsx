@@ -863,7 +863,7 @@ function SignupModal({ plan, total, quote, frequencyByService, onClose }) {
         {step === 4 && (
           <div className="modal-body modal-centered">
             <div className="modal-success-icon">🏠</div>
-            <h2 className="modal-title">Deposit received — let's book your first visit</h2>
+            <h2 className="modal-title">Deposit received — thank you. We look forward to tending to your home. Let's book your first visit.</h2>
             <p className="modal-sub">Your first visit is a house wash. Pick a time that suits you and we'll take care of the rest.</p>
             <button className="btn-primary" style={{ width: '100%', marginTop: 24 }}>
               Book your house wash →
@@ -1306,24 +1306,23 @@ export default function App() {
           padding: 24px 22px;
           display: flex;
           flex-direction: column;
+          background: var(--paper);
         }
         .fold-pane-hero {
-          background: var(--paper);
           border-right: 1px solid var(--line);
         }
         .fold-pane-services {
-          background: var(--stone);
           border-right: 1px solid var(--line);
         }
         .fold-pane-right {
-          background: var(--ink);
+          background: var(--paper);
         }
         .fold-pane-label {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.06em;
           text-transform: uppercase;
-          color: #8A8576;
+          color: var(--clay-dark);
           margin-bottom: 12px;
         }
         .fold-services-list {
@@ -1373,10 +1372,14 @@ export default function App() {
         .fold-service-row {
           border-radius: 8px;
           padding: 4px 8px;
+          background: transparent;
+          transition: background 0.12s;
+        }
+        .fold-service-row:hover {
           background: var(--stone);
         }
         .fold-service-row.active {
-          background: var(--stone);
+          background: #FBF1EC;
         }
         .fold-service-toggle {
           display: flex;
@@ -1436,11 +1439,13 @@ export default function App() {
           font-weight: 600;
         }
 
-        /* FOLD PRICE CARD — dark pane */
+        /* FOLD PRICE CARD — dark floating card */
         .fold-price-card {
-          background: transparent;
+          background: var(--ink);
           color: var(--paper);
-          padding: 0;
+          padding: 22px 20px;
+          border-radius: 16px;
+          box-shadow: 0 8px 32px rgba(38,48,42,0.18);
         }
         .fold-price-label {
           font-size: 10px;

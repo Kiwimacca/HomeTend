@@ -256,6 +256,48 @@ function SeasonalWheel() {
   );
 }
 
+const TESTIMONIALS = [
+  { name: 'Sarah M.', suburb: 'Fendalton', stars: 5, text: 'I honestly didn\'t realise how much mental energy I was spending worrying about the gutters, the moss on the roof, all of it. HomeTend just made it disappear. The photo after each visit is such a small thing but it means so much.' },
+  { name: 'Rachel T.', suburb: 'Merivale', stars: 5, text: 'The crew turned up exactly when they said they would, did an incredible job on the house wash and driveway, and left everything spotless. First time I\'ve had tradespeople I didn\'t have to chase. Worth every cent.' },
+  { name: 'Donna K.', suburb: 'St Albans', stars: 5, text: 'I was a bit sceptical at first — a subscription for home maintenance felt unusual. But after the first visit I was completely sold. They noticed a loose gutter bracket I hadn\'t even seen and flagged it before it became a problem. That\'s the difference.' },
+  { name: 'Jo W.', suburb: 'Sumner', stars: 5, text: 'Managing the house on my own after my separation was overwhelming. HomeTend genuinely took one big thing off my plate. The windows look amazing, the roof is clear, and I didn\'t have to organise a thing.' },
+  { name: 'Amanda B.', suburb: 'Halswell', stars: 5, text: 'Reliable, professional, and the boys are lovely. Never felt uncomfortable having them around the property. My neighbour noticed how good the place looked and asked for their number.' },
+  { name: 'Lisa F.', suburb: 'Riccarton', stars: 5, text: 'Set it up in about two minutes online, got a confirmation text the same day, and they were here the following week. The HVAC hasn\'t run this quietly in years. Genuinely impressed.' },
+];
+
+function TestimonialCarousel() {
+  const [idx, setIdx] = useState(0);
+  const total = TESTIMONIALS.length;
+
+  useEffect(() => {
+    const timer = setInterval(() => setIdx((i) => (i + 1) % total), 5000);
+    return () => clearInterval(timer);
+  }, [total]);
+
+  const prev = () => setIdx((i) => (i - 1 + total) % total);
+  const next = () => setIdx((i) => (i + 1) % total);
+  const t = TESTIMONIALS[idx];
+
+  return (
+    <section className="carousel-section">
+      <div className="carousel-inner">
+        <div className="carousel-stars">{'★'.repeat(t.stars)}</div>
+        <blockquote className="carousel-quote">"{t.text}"</blockquote>
+        <div className="carousel-author">{t.name} · {t.suburb}</div>
+        <div className="carousel-controls">
+          <button className="carousel-btn" onClick={prev}>←</button>
+          <div className="carousel-dots">
+            {TESTIMONIALS.map((_, i) => (
+              <button key={i} className={`carousel-dot ${i === idx ? 'active' : ''}`} onClick={() => setIdx(i)} />
+            ))}
+          </div>
+          <button className="carousel-btn" onClick={next}>→</button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
   const [selected, setSelected] = useState(new Set(['roof', 'gutter', 'house-wash']));
   const [scrolled, setScrolled] = useState(false);
@@ -263,6 +305,7 @@ export default function App() {
   const [bedrooms, setBedrooms] = useState('3');
   const [storeys, setStoreys] = useState(1);
   const [hvacOutlets, setHvacOutlets] = useState(1);
+  const [activeTab, setActiveTab] = useState(null);
   const [frequencyByService, setFrequencyByService] = useState({
     roof: 'annual',
     gutter: 'annual',
@@ -1074,6 +1117,85 @@ export default function App() {
         .final-cta h2 { color: var(--paper); font-size: clamp(32px, 5vw, 50px); max-width: 18ch; margin: 0 auto; }
         .final-cta p { color: rgba(252,251,248,0.7); margin: 20px auto 36px; max-width: 44ch; font-size: 17px; }
 
+        /* NAV active tab */
+        .nav-links li.active { opacity: 1; }
+
+        /* CAROUSEL */
+        .carousel-section {
+          background: var(--ink);
+          padding: 56px 6vw;
+        }
+        .carousel-inner {
+          max-width: 720px;
+          margin: 0 auto;
+          text-align: center;
+        }
+        .carousel-stars {
+          color: var(--clay);
+          font-size: 22px;
+          letter-spacing: 3px;
+          margin-bottom: 20px;
+        }
+        .carousel-quote {
+          font-family: 'Fraunces', serif;
+          font-size: clamp(17px, 2.5vw, 22px);
+          font-style: italic;
+          color: var(--paper);
+          line-height: 1.55;
+          margin: 0 0 20px;
+          font-weight: 400;
+        }
+        .carousel-author {
+          font-size: 13px;
+          color: var(--sage);
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          margin-bottom: 28px;
+        }
+        .carousel-controls {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+        }
+        .carousel-btn {
+          background: rgba(255,255,255,0.1);
+          border: none;
+          color: var(--paper);
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          cursor: pointer;
+          font-size: 16px;
+          transition: background 0.2s;
+        }
+        .carousel-btn:hover { background: rgba(255,255,255,0.2); }
+        .carousel-dots {
+          display: flex;
+          gap: 8px;
+        }
+        .carousel-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          border: none;
+          background: rgba(255,255,255,0.3);
+          cursor: pointer;
+          transition: background 0.2s;
+          padding: 0;
+        }
+        .carousel-dot.active { background: var(--clay); }
+
+        /* TAB PANELS */
+        .tab-panel {
+          animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
         footer {
           padding: 50px 6vw;
           display: flex;
@@ -1099,12 +1221,20 @@ export default function App() {
 
       {/* NAV */}
       <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
-        <div className="nav-logo">HomeTend.</div>
+        <div className="nav-logo" onClick={() => setActiveTab(null)} style={{cursor:'pointer'}}>HomeTend.</div>
         <ul className="nav-links">
-          <li>How it works</li>
-          <li>About</li>
+          {[
+            { id: 'how', label: 'How it works' },
+            { id: 'why', label: 'Why HomeTend' },
+            { id: 'about', label: 'About' },
+          ].map((tab) => (
+            <li key={tab.id}
+              style={{ opacity: activeTab === tab.id ? 1 : 0.7, borderBottom: activeTab === tab.id ? '2px solid var(--clay)' : '2px solid transparent', paddingBottom: 2 }}
+              onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
+            >{tab.label}</li>
+          ))}
         </ul>
-        <button className="nav-cta">Get started</button>
+        <button className="nav-cta" onClick={() => setActiveTab(null)}>Build my plan</button>
       </nav>
 
       {/* ABOVE-FOLD PRODUCT SECTION */}
@@ -1236,56 +1366,93 @@ export default function App() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="section">
-        <Reveal>
-          <div className="section-head">
-            <span className="section-eyebrow">How it works</span>
-            <h2>A well-tended home costs less to own.</h2>
-            <p className="section-sub">The average Kiwi homeowner spends $3,000–$5,000 a year on home maintenance — most of it unplanned, reactive, and more expensive than it needed to be. HomeTend changes that.</p>
-          </div>
-        </Reveal>
-        <div className="steps">
-          {[
-            { t: 'Build your plan', d: 'Select the services your home needs and how often. Your quote updates instantly — upfront amount and monthly instalments shown live.' },
-            { t: 'Sign your Service Agreement', d: 'Takes two minutes. A 50% deposit secures your plan, with the remaining 50% split across 11 equal monthly payments. No surprises in the fine print.' },
-            { t: 'We schedule your visits', d: 'Your crew books in and texts you the date. Visits land when your home actually needs them — gutters before the storms, windows in spring.' },
-            { t: 'Proof, every time', d: 'A photo and a short note land in your inbox the moment each visit is done. If we notice anything else worth flagging, we will.' },
-          ].map((s, i) => (
-            <Reveal key={s.t} delay={i * 90}>
-              <div className="step">
-                <span className="stepnum">{String(i + 1).padStart(2, '0')}</span>
-                <h3>{s.t}</h3>
-                <p>{s.d}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-        <Reveal>
-          <div className="payment-note">
-            <span className="payment-note-icon">💳</span>
-            <div>
-              <strong>Year one:</strong> 50% deposit on sign-up, remaining 50% across 11 equal monthly payments.
-              {' '}<strong>Year two onwards:</strong> your choice — continue on 12 equal monthly direct debits, or renew with a fresh 50% deposit and lower monthly instalments. We'll remind you six weeks before your anniversary so there are no surprises.
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      {/* TESTIMONIALS CAROUSEL — always visible on homepage */}
+      {!activeTab && (
+        <TestimonialCarousel />
+      )}
 
-      {/* TRUST */}
-      <section className="trust">
-        <div className="section">
+      {/* TAB PANELS */}
+      {activeTab === 'how' && (
+        <section className="tab-panel section">
           <Reveal>
             <div className="section-head">
-              <span className="section-eyebrow">Why people stay</span>
-              <h2>Young crew. A properly run operation.</h2>
+              <span className="section-eyebrow">How it works</span>
+              <h2>A well-tended home costs less to own.</h2>
+              <p className="section-sub">The average Kiwi homeowner spends $3,000–$5,000 a year on home maintenance — most of it unplanned, reactive, and more expensive than it needed to be. HomeTend changes that.</p>
+            </div>
+          </Reveal>
+          <div className="steps">
+            {[
+              { t: 'Build your plan', d: 'Select the services your home needs and how often. Your quote updates instantly — upfront amount and monthly instalments shown live.' },
+              { t: 'Sign your Service Agreement', d: 'Takes two minutes. A 50% deposit secures your plan, with the remaining 50% split across 11 equal monthly payments. No surprises in the fine print.' },
+              { t: 'We schedule your visits', d: 'Your crew books in and texts you the date. Visits land when your home actually needs them — gutters before the storms, windows in spring.' },
+              { t: 'Proof, every time', d: 'A photo and a short note land in your inbox the moment each visit is done. If we notice anything else worth flagging, we will.' },
+            ].map((s, i) => (
+              <Reveal key={s.t} delay={i * 90}>
+                <div className="step">
+                  <span className="stepnum">{String(i + 1).padStart(2, '0')}</span>
+                  <h3>{s.t}</h3>
+                  <p>{s.d}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal>
+            <div className="payment-note">
+              <span className="payment-note-icon">💳</span>
+              <div>
+                <strong>Year one:</strong> 50% deposit on sign-up, remaining 50% across 11 equal monthly payments.
+                {' '}<strong>Year two onwards:</strong> your choice — continue on 12 equal monthly direct debits, or renew with a fresh 50% deposit and lower monthly instalments. We'll remind you six weeks before your anniversary so there are no surprises.
+              </div>
+            </div>
+          </Reveal>
+        </section>
+      )}
+
+      {activeTab === 'why' && (
+        <section className="tab-panel">
+          <div className="trust">
+            <div className="section">
+              <Reveal>
+                <div className="section-head">
+                  <span className="section-eyebrow">Why HomeTend</span>
+                  <h2>Young crew. A properly run operation.</h2>
+                </div>
+              </Reveal>
+              <div className="trust-grid">
+                {[
+                  { icon: '✓', t: 'Same crew, every visit', d: 'You\'re not getting a stranger each time — you get a consistent, vetted team who know your property.' },
+                  { icon: '✉', t: 'Proof, not promises', d: 'Every visit ends with a photo and a note. If something looks off, we flag it before you ever have to ask.' },
+                  { icon: '↻', t: 'We service your street, not just your house', d: 'When we\'re already in your neighbourhood for a job, your home\'s on the list — which is how a fair monthly price works.' },
+                ].map((item, i) => (
+                  <Reveal key={item.t} delay={i * 100}>
+                    <div className="trust-item">
+                      <div className="trust-icon">{item.icon}</div>
+                      <h3>{item.t}</h3>
+                      <p>{item.d}</p>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {activeTab === 'about' && (
+        <section className="tab-panel section">
+          <Reveal>
+            <div className="section-head">
+              <span className="section-eyebrow">About HomeTend</span>
+              <h2>Built by someone who cares about getting it right.</h2>
+              <p className="section-sub">HomeTend was started with one simple belief: homeowners deserve a reliable, professional service that shows up when it says it will, does the work properly, and keeps them in the loop without them having to chase anyone. We're not a franchise. We're not a directory. We're a small, systemised crew with high standards — and your home is in good hands.</p>
             </div>
           </Reveal>
           <div className="trust-grid">
             {[
-              { icon: '✓', t: 'Same crew, every visit', d: 'You\'re not getting a stranger each time — you get a consistent, vetted team who know your property.' },
-              { icon: '✉', t: 'Proof, not promises', d: 'Every visit ends with a photo and a note. If something looks off, we flag it before you ever have to ask.' },
-              { icon: '↻', t: 'We service your street, not just your house', d: 'When we\'re already in your neighbourhood for a job, your home\'s on the list — which is how a fair monthly price works.' },
+              { icon: '📍', t: 'Based in Christchurch', d: 'We know the streets, the weather, and what Christchurch homes need — and when they need it.' },
+              { icon: '🔒', t: 'Fully insured', d: 'Public liability insurance on every visit. Your home and your peace of mind are covered.' },
+              { icon: '📱', t: 'AI-powered scheduling', d: 'Our systems handle the reminders, scheduling, and follow-ups automatically — so nothing falls through the cracks.' },
             ].map((item, i) => (
               <Reveal key={item.t} delay={i * 100}>
                 <div className="trust-item">
@@ -1296,21 +1463,12 @@ export default function App() {
               </Reveal>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* FINAL CTA */}
-      <Reveal>
-        <div className="final-cta">
-          <h2>Give your home the attention it's worth.</h2>
-          <p>Build a plan in under two minutes. One monthly fee, your home tended to on its own seasons.</p>
-          <button className="btn-primary">Build your plan</button>
-        </div>
-      </Reveal>
+        </section>
+      )}
 
       <footer>
         <span>HomeTend. © 2026</span>
-        <span>Auckland & beyond</span>
+        <span>Christchurch, NZ</span>
       </footer>
     </div>
   );

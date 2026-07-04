@@ -1035,7 +1035,7 @@ Always be helpful, warm and direct. Never be pushy. If you don't know something 
     return {};
   };
 
-  if (phase === 'hidden') return null;
+  const isSettled = phase === 'settled';
 
   return (
     <>
@@ -1062,22 +1062,26 @@ Always be helpful, warm and direct. Never be pushy. If you don't know something 
           display: block;
           filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
         }
-        .finn-arm-anim { transform-origin: 80% 40%; }
         .finn-nod-anim { animation: finnNod 0.3s ease-in-out 3; }
       `}</style>
 
-      {/* Character image */}
-      <div style={getCharStyle()}>
-        <img
-          src={FINN_IMAGE}
-          alt="Finn HomeTend"
-          className={`finn-char-img ${phase === 'nodding' ? 'finn-nod-anim' : ''}`}
-          style={{ animation: phase === 'buffing' ? 'finnBuff 0.4s ease-in-out infinite alternate' : 'none', transformOrigin: '80% 30%' }}
-        />
-      </div>
+      {/* Character — visible during walk/buff/nod phases */}
+      {!isSettled && (
+        <div style={getCharStyle()}>
+          <img
+            src={FINN_IMAGE}
+            alt="Finn HomeTend"
+            className={`finn-char-img ${phase === 'nodding' ? 'finn-nod-anim' : ''}`}
+            style={{
+              animation: phase === 'buffing' ? 'finnBuff 0.4s ease-in-out infinite alternate' : 'none',
+              transformOrigin: '80% 30%'
+            }}
+          />
+        </div>
+      )}
 
-      {/* Chat button — appears after Finn settles */}
-      {phase === 'settled' && (
+      {/* Chat button — always visible once settled */}
+      {isSettled && (
         <button
           onClick={() => setChatOpen(o => !o)}
           style={{
@@ -1090,7 +1094,7 @@ Always be helpful, warm and direct. Never be pushy. If you don't know something 
           }}
           aria-label="Chat with HomeTend"
         >
-          <img src={FINN_IMAGE} alt="" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top' }}/>
+          <img src={FINN_IMAGE} alt="" style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top center' }}/>
         </button>
       )}
 

@@ -925,6 +925,21 @@ function SignupModal({ plan, total, quote, frequencyByService, onClose }) {
   );
 }
 
+function FinnCharacter() {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <>
+      <button onClick={() => setOpen(o => !o)} style={{position:'fixed',bottom:24,right:24,zIndex:9999,width:60,height:60,borderRadius:'50%',padding:0,overflow:'hidden',border:'3px solid white',cursor:'pointer',boxShadow:'0 4px 20px rgba(26,58,110,0.5)'}}>
+        <img src="/finn.png" alt="Chat" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'top center'}}/>
+      </button>
+      {open && (
+        <div style={{position:'fixed',bottom:96,right:24,zIndex:9999,width:300,background:'white',borderRadius:16,boxShadow:'0 8px 32px rgba(0,0,0,0.2)',padding:16,border:'1px solid #D9D2C2'}}>
+          <p style={{margin:0,fontSize:14,color:'#26302A'}}>Hey! I'm Finn's assistant — happy to help with anything about HomeTend.</p>
+        </div>
+      )}
+    </>
+  );
+}
 export default function App() {
   const [selected, setSelected] = useState(new Set(['house-wash']));
   const [scrolled, setScrolled] = useState(false);
@@ -2668,6 +2683,7 @@ export default function App() {
           onClose={() => setShowModal(false)}
         />
       )}
+    <FinnCharacter />
     </div>
   );
 }

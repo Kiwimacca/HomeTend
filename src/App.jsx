@@ -1137,10 +1137,29 @@ export default function App() {
           font-size: 13px;
           font-weight: 700;
           cursor: pointer;
-          transition: all 0.2s;
+          transition: background 0.2s, transform 0.2s;
           font-family: 'Inter', sans-serif;
           position: relative;
           overflow: hidden;
+          animation: btnBuff 0.4s ease-in-out 3s 6 alternate;
+        }
+        @keyframes btnBuff {
+          0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0); transform: scale(1); }
+          50%  { box-shadow: 0 0 0 4px rgba(255,255,255,0.5), 0 0 18px rgba(181,96,63,0.6); transform: scale(1.06); }
+          100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); transform: scale(1); }
+        }
+        .nav-git-btn::after {
+          content: '';
+          position: absolute;
+          top: 0; left: -100%;
+          width: 60%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+          animation: btnShine 0.6s ease-in-out 3s 6;
+        }
+        @keyframes btnShine {
+          0%   { left: -100%; }
+          100% { left: 200%; }
         }
         .nav-git-btn:hover { background: #A0522D; transform: translateY(-1px); }
         .nav-git-btn-shine {
@@ -1920,7 +1939,7 @@ export default function App() {
           overflow: hidden;
           border-top: 1px solid #2E3830;
           border-bottom: 1px solid #2E3830;
-          height: 280px;
+          height: 330px;
         }
         .film-sprockets {
           display: flex;

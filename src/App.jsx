@@ -964,8 +964,8 @@ function FinnCharacter() {
   return (
     <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999, display: 'flex', alignItems: 'flex-end' }}>
       {open && (
-        <div style={{ width: 300, background: '#FCFBF8', borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden' }}>
-          <div style={{ height: 340, overflowY: 'auto', padding: '14px 14px 8px' }}>
+        <div style={{ width: 320, background: '#FCFBF8', height: 280, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>
             {msgs.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
                 <div style={{ maxWidth: '84%', padding: '9px 13px', borderRadius: m.role === 'user' ? '14px 14px 3px 14px' : '14px 14px 14px 3px', background: m.role === 'user' ? '#1A3A6E' : '#EDE8E0', color: m.role === 'user' ? 'white' : '#26302A', fontSize: 13, lineHeight: 1.55 }}>{m.text}</div>
@@ -978,7 +978,7 @@ function FinnCharacter() {
             )}
             <div ref={endRef}/>
           </div>
-          <div style={{ padding: '8px 10px 12px', borderTop: '1px solid #D9D2C2', display: 'flex', gap: 6 }}>
+          <div style={{ padding: '8px 10px 12px', borderTop: '1px solid #D9D2C2', display: 'flex', gap: 6, flexShrink: 0 }}>
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -986,25 +986,25 @@ function FinnCharacter() {
               placeholder="Ask the HomeTend team..."
               style={{ flex: 1, border: '1.5px solid #D9D2C2', borderRadius: 999, padding: '8px 13px', fontSize: 13, fontFamily: 'Inter,sans-serif', outline: 'none', background: '#FCFBF8', color: '#26302A' }}
             />
-            <button onClick={send} disabled={loading || !input.trim()} style={{ background: '#B5603F', border: 'none', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: loading || !input.trim() ? 0.4 : 1 }}>
+            <button onClick={send} disabled={loading || !input.trim()} style={{ background: '#B5603F', border: 'none', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: loading || !input.trim() ? 0.4 : 1 }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
             </button>
           </div>
         </div>
       )}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
         <img
           src={FINN_IMAGE}
           alt=""
           onClick={() => setOpen(o => !o)}
-          style={{ width: 160, display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))' }}
+          style={{ width: 220, display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))' }}
         />
         <div
           onClick={() => setOpen(o => !o)}
-          style={{ width: 160, background: '#1A3A6E', padding: '10px 14px', cursor: 'pointer', textAlign: 'center' }}
+          style={{ width: 220, background: '#1A3A6E', padding: '12px 16px', cursor: 'pointer', textAlign: 'center' }}
         >
-          <div style={{ color: 'white', fontSize: 13, fontWeight: 700 }}>HomeTend Assistant</div>
-          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>{open ? 'Click to close' : 'Ask us anything'}</div>
+          <div style={{ color: 'white', fontSize: 14, fontWeight: 700 }}>HomeTend Assistant</div>
+          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>{open ? 'Click to close ↓' : 'Ask us anything ↑'}</div>
         </div>
       </div>
     </div>
@@ -1920,6 +1920,7 @@ export default function App() {
           overflow: hidden;
           border-top: 1px solid #2E3830;
           border-bottom: 1px solid #2E3830;
+          height: 280px;
         }
         .film-sprockets {
           display: flex;

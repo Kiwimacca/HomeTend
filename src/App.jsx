@@ -925,21 +925,212 @@ function SignupModal({ plan, total, quote, frequencyByService, onClose }) {
   );
 }
 
+// ── FINN CHARACTER + CHAT ─────────────────────────────────────────────────
+const FINN_IMAGE = '/finn.png';
+
 function FinnCharacter() {
-  const [open, setOpen] = React.useState(false);
+  const [phase, setPhase] = useState('hidden');
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  const [messages, setMessages] = useState([
+    { role: 'assistant', text: "Hi there! The HomeTend team is here to help. Whether you have questions about our services, pricing, or your current plan — ask away." }
+  ]);
+  const [loading, setLoading] = useState(false);
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase('walking'), 1200);
+    const t2 = setTimeout(() => setPhase('buffing'), 2600);
+    const t3 = setTimeout(() => setPhase('nodding'), 4500);
+    const t4 = setTimeout(() => setPhase('settling'), 5100);
+    const t5 = setTimeout(() => setPhase('settled'), 6000);
+    return () => [t1,t2,t3,t4,t5].forEach(clearTimeout);
+  }, []);
+
+  // Add shine to Get in touch button during buff phase
+  useEffect(() => {
+    const btn = document.getElementById('nav-git-btn');
+    if (!btn) return;
+    let shine = btn.querySelector('.nav-git-btn-shine');
+    if (!shine) {
+      shine = document.createElement('div');
+      shine.className = 'nav-git-btn-shine';
+      btn.appendChild(shine);
+    }
+    if (phase === 'buffing') {
+      shine.classList.add('on');
+    } else {
+      shine.classList.remove('on');
+    }
+  }, [phase]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const sendMessage = async () => {
+    if (!chatInput.trim() || loading) return;
+    const userMsg = chatInput.trim();
+    setChatInput('');
+    const newMessages = [...messages, { role: 'user', text: userMsg }];
+    setMessages(newMessages);
+    setLoading(true);
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1000,
+          system: `You are the HomeTend team's friendly AI assistant. Warm, confident, professional tone — like a well-run home services company that takes pride in its work.
+
+HomeTend is a subscription home maintenance service in Christchurch NZ, founded by Finley McDrury. Services: House Wash, Roof Wash & Mould Removal, Gutter Clean, Window Clean, Driveway Clean, HVAC Maintenance, Spider Control.
+
+Pricing: Based on bedrooms and storeys. Average monthly plan ~$100/month. Year 1: 50% deposit upfront + 11 equal monthly payments. Year 2+: 12 equal monthly direct debits OR renew on deposit structure. Cancel anytime with 30 days notice. 5 working day cooling-off for door-to-door sign-ups.
+
+Key facts:
+- Based in Christchurch NZ, servicing all Christchurch suburbs
+- Same crew every visit — consistent, professional, vetted
+- Fully insured with public liability cover
+- 48hr advance notice for all visits by text
+- Photo sent on completion of every visit
+- Route-optimised — multiple properties per area per visit
+- Contact: hello@hometend.co.nz · Phone: [to be confirmed]
+
+Handle: prospect questions, pricing, plan building, lead capture (name/email/suburb), existing customer queries (next visit, plan changes, access instructions, cancellations), objection handling.
+
+Keep responses concise and warm. If you don't know something specific, say the team will follow up directly. Never be pushy. Reference "the team" or "we" — not individual names.`,
+          messages: newMessages.map(m => ({
+            role: m.role === 'user' ? 'user' : 'assistant',
+            content: m.text
+          }))
+        })
+      });
+      const data = await response.json();
+      const reply = data.content?.[0]?.text || "Sorry — please email us at hello@hometend.co.nz and we'll get right back to you.";
+      setMessages(m => [...m, { role: 'assistant', text: reply }]);
+    } catch {
+      setMessages(m => [...m, { role: 'assistant', text: "Sorry, something went wrong — email us at hello@hometend.co.nz and we'll be right with you." }]);
+    }
+    setLoading(false);
+  };
+
+  const charStyle = () => {
+    const base = {
+      position: 'fixed', zIndex: 998, pointerEvents: 'none',
+      transition: 'right 1s cubic-bezier(0.4,0,0.2,1), bottom 0.9s cubic-bezier(0.4,0,0.2,1), transform 0.9s ease, opacity 0.4s',
+    };
+    switch(phase) {
+      case 'hidden':   return { ...base, right: '-200px', bottom: 0, width: 130, opacity: 0 };
+      case 'walking':  return { ...base, right: 100, bottom: 0, width: 130, opacity: 1 };
+      case 'buffing':  return { ...base, right: 100, bottom: 0, width: 130, opacity: 1,
+        animation: 'finnBuff 0.35s ease-in-out infinite alternate', transformOrigin: '75% 30%' };
+      case 'nodding':  return { ...base, right: 100, bottom: 0, width: 130, opacity: 1 };
+      case 'settling': return { ...base, right: 16, bottom: 180, width: 100, opacity: 0.9 };
+      case 'settled':  return { ...base, right: 16, bottom: 180, width: 100, opacity: 0, pointerEvents: 'none' };
+      default:         return { ...base, opacity: 0 };
+    }
+  };
+
   return (
     <>
-      <button onClick={() => setOpen(o => !o)} style={{position:'fixed',bottom:24,right:24,zIndex:9999,width:60,height:60,borderRadius:'50%',padding:0,overflow:'hidden',border:'3px solid white',cursor:'pointer',boxShadow:'0 4px 20px rgba(26,58,110,0.5)'}}>
-        <img src="/finn.png" alt="Chat" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'top center'}}/>
-      </button>
-      {open && (
-        <div style={{position:'fixed',bottom:96,right:24,zIndex:9999,width:300,background:'white',borderRadius:16,boxShadow:'0 8px 32px rgba(0,0,0,0.2)',padding:16,border:'1px solid #D9D2C2'}}>
-          <p style={{margin:0,fontSize:14,color:'#26302A'}}>Hey! I'm Finn's assistant — happy to help with anything about HomeTend.</p>
+      <style>{`
+        @keyframes finnBuff {
+          from { transform: rotate(-10deg) translateX(-2px); }
+          to   { transform: rotate(8deg) translateX(3px); }
+        }
+        @keyframes finnNod {
+          0%,100% { transform: rotate(0deg); }
+          30% { transform: rotate(4deg); }
+          70% { transform: rotate(-2deg); }
+        }
+        @keyframes finnBob {
+          0%,100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); }
+        }
+        @keyframes chatIn {
+          from { opacity:0; transform: scale(0.95) translateY(8px); }
+          to   { opacity:1; transform: scale(1) translateY(0); }
+        }
+        .finn-nod { animation: finnNod 0.35s ease-in-out 3; }
+      `}</style>
+
+      {/* Walking/buffing/nodding/settling character */}
+      {phase !== 'settled' && phase !== 'hidden' && (
+        <img
+          src={FINN_IMAGE}
+          alt=""
+          className={phase === 'nodding' ? 'finn-nod' : ''}
+          style={{
+            ...charStyle(),
+            display: 'block',
+            filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.18))',
+          }}
+        />
+      )}
+
+      {/* Settled state — standing character + chat panel */}
+      {phase === 'settled' && (
+        <div style={{ position: 'fixed', bottom: 0, right: 16, zIndex: 999, display: 'flex', flexDirection: 'column', alignItems: 'center', width: 320 }}>
+
+          {/* Chat panel */}
+          {chatOpen && (
+            <div style={{ width: '100%', background: '#FCFBF8', borderRadius: '20px 20px 0 0', boxShadow: '0 -4px 32px rgba(38,48,42,0.15)', border: '1px solid #D9D2C2', borderBottom: 'none', animation: 'chatIn 0.25s ease', marginBottom: 0 }}>
+              {/* Messages */}
+              <div style={{ height: 260, overflowY: 'auto', padding: '16px 14px 8px' }}>
+                {messages.map((m, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 8 }}>
+                    <div style={{
+                      maxWidth: '84%', padding: '8px 13px',
+                      borderRadius: m.role === 'user' ? '14px 14px 3px 14px' : '14px 14px 14px 3px',
+                      background: m.role === 'user' ? '#1A3A6E' : '#EDE8E0',
+                      color: m.role === 'user' ? 'white' : '#26302A',
+                      fontSize: 13, lineHeight: 1.5,
+                    }}>{m.text}</div>
+                  </div>
+                ))}
+                {loading && (
+                  <div style={{ display: 'flex', gap: 5, padding: '4px 8px' }}>
+                    {[0,1,2].map(i => <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: '#B5603F', animation: `finnBob 1s ease-in-out ${i*0.2}s infinite` }}/>)}
+                  </div>
+                )}
+                <div ref={chatEndRef}/>
+              </div>
+              {/* Input */}
+              <div style={{ padding: '8px 10px 12px', borderTop: '1px solid #D9D2C2', display: 'flex', gap: 6 }}>
+                <input
+                  value={chatInput}
+                  onChange={e => setChatInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && sendMessage()}
+                  placeholder="Ask the HomeTend team..."
+                  style={{ flex:1, border:'1.5px solid #D9D2C2', borderRadius:999, padding:'7px 12px', fontSize:13, fontFamily:'Inter,sans-serif', outline:'none', background:'#FCFBF8', color:'#26302A' }}
+                />
+                <button onClick={sendMessage} disabled={loading || !chatInput.trim()} style={{ background:'#B5603F', border:'none', borderRadius:'50%', width:34, height:34, cursor:'pointer', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', opacity: loading || !chatInput.trim() ? 0.4 : 1 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Standing Finn above chat bar */}
+          <div style={{ width: '100%', background: '#1A3A6E', borderRadius: chatOpen ? 0 : '20px 20px 0 0', padding: '10px 16px 0', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => setChatOpen(o => !o)}>
+            <div style={{ paddingBottom: 10 }}>
+              <div style={{ color: 'white', fontSize: 13, fontWeight: 700 }}>HomeTend Assistant</div>
+              <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 11, marginTop: 2 }}>{chatOpen ? 'Click to minimise' : 'Ask our team anything'}</div>
+            </div>
+            <img
+              src={FINN_IMAGE}
+              alt="HomeTend team"
+              style={{ width: 90, display: 'block', marginBottom: -1, filter: 'drop-shadow(0 -2px 8px rgba(0,0,0,0.2))' }}
+            />
+          </div>
+
         </div>
       )}
     </>
   );
 }
+
 export default function App() {
   const [selected, setSelected] = useState(new Set(['house-wash']));
   const [scrolled, setScrolled] = useState(false);
@@ -948,6 +1139,7 @@ export default function App() {
   const [hvacOutlets, setHvacOutlets] = useState(1);
   const [activeTab, setActiveTab] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showContact, setShowContact] = useState(false);
   const [frequencyByService, setFrequencyByService] = useState({
     'house-wash': 'annual',
   });
@@ -1056,7 +1248,30 @@ export default function App() {
         }
         .nav-links li { cursor: pointer; opacity: 0.75; transition: opacity 0.2s; }
         .nav-links li:hover { opacity: 1; }
-        .nav-cta {
+        .nav-git-btn {
+          background: var(--clay);
+          color: white;
+          border: none;
+          border-radius: 999px;
+          padding: 9px 20px;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+          font-family: 'Inter', sans-serif;
+          position: relative;
+          overflow: hidden;
+        }
+        .nav-git-btn:hover { background: #A0522D; transform: translateY(-1px); }
+        .nav-git-btn-shine {
+          position: absolute;
+          inset: 0;
+          background: rgba(255,255,255,0);
+          transition: background 0.15s;
+          border-radius: 999px;
+          pointer-events: none;
+        }
+        .nav-git-btn-shine.on { background: rgba(255,255,255,0.35); }
           background: var(--ink);
           color: var(--paper);
           padding: 10px 22px;
@@ -2446,7 +2661,7 @@ export default function App() {
             >{tab.label}</li>
           ))}
         </ul>
-        <button className="nav-cta" onClick={() => setActiveTab(null)}>Build my plan</button>
+        <button id="nav-git-btn" className="nav-git-btn" onClick={() => setShowContact(true)}>Get in touch</button>
       </nav>
 
       {/* ABOVE-FOLD — 3 pane layout */}
@@ -2683,7 +2898,70 @@ export default function App() {
           onClose={() => setShowModal(false)}
         />
       )}
-    <FinnCharacter />
+
+      {showContact && (
+        <div style={{ position:'fixed', inset:0, background:'rgba(38,48,42,0.6)', backdropFilter:'blur(4px)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:20 }} onClick={e => e.target===e.currentTarget && setShowContact(false)}>
+          <div style={{ background:'#FCFBF8', borderRadius:20, width:'100%', maxWidth:420, padding:32, position:'relative', boxShadow:'0 24px 60px rgba(0,0,0,0.25)' }}>
+            <button onClick={() => setShowContact(false)} style={{ position:'absolute', top:16, right:16, background:'#EDE8E0', border:'none', borderRadius:'50%', width:30, height:30, cursor:'pointer', fontSize:14, display:'flex', alignItems:'center', justifyContent:'center' }}>✕</button>
+            <h2 style={{ fontFamily:'Fraunces,serif', fontSize:22, fontWeight:500, margin:'0 0 6px', color:'#26302A' }}>Get in touch</h2>
+            <p style={{ fontSize:14, color:'#4A5048', margin:'0 0 24px', lineHeight:1.5 }}>The HomeTend team is here to help. Choose how you'd like to reach us.</p>
+
+            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              {/* Chat */}
+              <button onClick={() => { setShowContact(false); }} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 18px', background:'#1A3A6E', border:'none', borderRadius:14, cursor:'pointer', textAlign:'left' }}>
+                <span style={{ fontSize:22 }}>💬</span>
+                <div>
+                  <div style={{ color:'white', fontSize:14, fontWeight:700 }}>Chat with our assistant</div>
+                  <div style={{ color:'rgba(255,255,255,0.65)', fontSize:12 }}>AI-powered · replies instantly</div>
+                </div>
+              </button>
+
+              {/* Phone */}
+              <a href="tel:+6421000000" style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 18px', background:'#EDE8E0', borderRadius:14, textDecoration:'none' }}>
+                <span style={{ fontSize:22 }}>📞</span>
+                <div>
+                  <div style={{ color:'#26302A', fontSize:14, fontWeight:700 }}>Call or text</div>
+                  <div style={{ color:'#4A5048', fontSize:12 }}>021 000 0000 — [Finn's number to be added]</div>
+                </div>
+              </a>
+
+              {/* Email */}
+              <a href="mailto:hello@hometend.co.nz" style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 18px', background:'#EDE8E0', borderRadius:14, textDecoration:'none' }}>
+                <span style={{ fontSize:22 }}>✉️</span>
+                <div>
+                  <div style={{ color:'#26302A', fontSize:14, fontWeight:700 }}>Email us</div>
+                  <div style={{ color:'#4A5048', fontSize:12 }}>hello@hometend.co.nz</div>
+                </div>
+              </a>
+
+              {/* Callback */}
+              <a href={CALENDLY_URL} target="_blank" rel="noreferrer" style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 18px', background:'#EDE8E0', borderRadius:14, textDecoration:'none' }}>
+                <span style={{ fontSize:22 }}>📅</span>
+                <div>
+                  <div style={{ color:'#26302A', fontSize:14, fontWeight:700 }}>Book a callback</div>
+                  <div style={{ color:'#4A5048', fontSize:12 }}>Pick a time that suits you</div>
+                </div>
+              </a>
+
+              {/* Social */}
+              <div style={{ display:'flex', gap:10, marginTop:4 }}>
+                {[
+                  { label:'Facebook', icon:'f', color:'#1877F2', href:'https://facebook.com/hometend' },
+                  { label:'Instagram', icon:'◈', color:'#E1306C', href:'https://instagram.com/hometend' },
+                  { label:'TikTok', icon:'♪', color:'#010101', href:'https://tiktok.com/@hometend' },
+                ].map(s => (
+                  <a key={s.label} href={s.href} target="_blank" rel="noreferrer" style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:6, padding:'12px 8px', background:'#EDE8E0', borderRadius:12, textDecoration:'none' }}>
+                    <span style={{ fontSize:20, color:s.color }}>{s.icon}</span>
+                    <span style={{ fontSize:11, color:'#4A5048', fontWeight:600 }}>{s.label}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <FinnCharacter />
     </div>
   );
 }

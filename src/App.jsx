@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, createPortal } from 'react';
 
 // ── REPLACE THIS with Finn's real Calendly link once his account is set up ──
 const CALENDLY_URL = 'https://calendly.com/hometend-christchurch/house-wash';
@@ -940,234 +940,6 @@ function FinnCharacter() {
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase('walking'), 1200);
-    const t2 = setTimeout(() => setPhase('buffing'), 2800);
-    const t3 = setTimeout(() => setPhase('nodding'), 4800);
-    const t4 = setTimeout(() => setPhase('settled'), 5600);
-    return () => [t1,t2,t3,t4].forEach(clearTimeout);
-  }, []);
-
-  // Shine effect on Get in touch button during buff
-  useEffect(() => {
-    const btn = document.getElementById('nav-git-btn');
-    if (!btn) return;
-    if (phase === 'buffing') {
-      btn.style.boxShadow = '0 0 0 3px rgba(255,255,255,0.6), 0 0 20px rgba(181,96,63,0.5)';
-      btn.style.transform = 'scale(1.05)';
-    } else {
-      btn.style.boxShadow = '';
-      btn.style.transform = '';
-    }
-  }, [phase]);
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  const sendMessage = async () => {
-    if (!chatInput.trim() || loading) return;
-    const userMsg = chatInput.trim();
-    setChatInput('');
-    const newMessages = [...messages, { role: 'user', text: userMsg }];
-    setMessages(newMessages);
-    setLoading(true);
-    try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 1000,
-          system: `You are the HomeTend team's friendly AI assistant. Warm, confident, professional — like a well-run home services company that takes pride in its work.
-
-HomeTend is a subscription home maintenance service in Christchurch NZ. Services: House Wash, Roof Wash & Mould Removal, Gutter Clean, Window Clean, Driveway Clean, HVAC Maintenance, Spider Control. Average plan ~$100/month. Year 1: 50% deposit + 11 monthly payments. Year 2+: 12 equal monthly direct debits or renew on deposit. Cancel anytime with 30 days notice. Fully insured. Same crew every visit. Photo after every visit. Contact: hello@hometend.co.nz
-
-Keep responses concise and warm. Reference "the team" or "we" — not individual names. If unsure, say the team will follow up.`,
-          messages: newMessages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
-        })
-      });
-      const data = await response.json();
-      const reply = data.content?.[0]?.text || "Sorry — email us at hello@hometend.co.nz and we'll get right back to you.";
-      setMessages(m => [...m, { role: 'assistant', text: reply }]);
-    } catch {
-      setMessages(m => [...m, { role: 'assistant', text: "Sorry, something went wrong — email us at hello@hometend.co.nz" }]);
-    }
-    setLoading(false);
-  };
-
-  return (
-    <>
-      <style>{`
-        @keyframes finnWalkIn {
-          from { transform: translateX(300px); opacity: 0; }
-          to   { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes finnBuff {
-          0%   { transform: rotate(0deg) translateX(0); }
-          25%  { transform: rotate(-8deg) translateX(-4px); }
-          75%  { transform: rotate(8deg) translateX(4px); }
-          100% { transform: rotate(0deg) translateX(0); }
-        }
-        @keyframes finnNod {
-          0%,100% { transform: rotate(0deg); }
-          30%  { transform: rotate(5deg); }
-          70%  { transform: rotate(-3deg); }
-        }
-        @keyframes finnSettle {
-          from { transform: translateX(60px); opacity: 0.5; }
-          to   { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes finnBob {
-          0%,100% { transform: translateY(0); }
-          50%  { transform: translateY(-5px); }
-        }
-        @keyframes chatSlideUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .finn-walking { animation: finnWalkIn 1.4s cubic-bezier(0.4,0,0.2,1) forwards; }
-        .finn-buffing { animation: finnBuff 0.5s ease-in-out infinite; transform-origin: 75% 35%; }
-        .finn-nodding { animation: finnNod 0.4s ease-in-out 3; }
-        .finn-settled { animation: finnSettle 0.6s ease forwards, finnBob 4s ease-in-out 0.6s infinite; }
-      `}</style>
-
-      {/* Walking / buffing / nodding character — positioned near nav */}
-      {(phase === 'walking' || phase === 'buffing' || phase === 'nodding') && (
-        <img
-          src={FINN_IMAGE}
-          alt=""
-          className={`finn-${phase}`}
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            right: phase === 'buffing' ? 120 : 80,
-            width: 180,
-            zIndex: 998,
-            pointerEvents: 'none',
-            filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))',
-            transition: 'right 0.5s ease',
-          }}
-        />
-      )}
-
-      {/* Settled state — Finn beside chat panel */}
-      {phase === 'settled' && (
-        <div style={{
-          position: 'fixed',
-          bottom: 0,
-          right: 0,
-          zIndex: 999,
-          display: 'flex',
-          alignItems: 'flex-end',
-          gap: 0,
-        }}>
-          {/* Chat panel */}
-          <div style={{
-            width: 300,
-            background: '#FCFBF8',
-            borderRadius: '20px 0 0 0',
-            boxShadow: '-4px -4px 32px rgba(38,48,42,0.15)',
-            border: '1px solid #D9D2C2',
-            borderRight: 'none',
-            borderBottom: 'none',
-            overflow: 'hidden',
-          }}>
-            {/* Header bar */}
-            <div
-              onClick={() => setChatOpen(o => !o)}
-              style={{
-                background: '#1A3A6E',
-                padding: '14px 18px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div>
-                <div style={{ color: 'white', fontSize: 14, fontWeight: 700 }}>HomeTend Assistant</div>
-                <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 11, marginTop: 2 }}>
-                  {chatOpen ? 'Click to minimise ↓' : 'Ask our team anything ↑'}
-                </div>
-              </div>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#4CAF50', boxShadow: '0 0 6px #4CAF50' }}/>
-            </div>
-
-            {/* Messages */}
-            {chatOpen && (
-              <div style={{ animation: 'chatSlideUp 0.2s ease' }}>
-                <div style={{ height: 320, overflowY: 'auto', padding: '14px 14px 8px' }}>
-                  {messages.map((m, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
-                      <div style={{
-                        maxWidth: '84%', padding: '9px 13px',
-                        borderRadius: m.role === 'user' ? '14px 14px 3px 14px' : '14px 14px 14px 3px',
-                        background: m.role === 'user' ? '#1A3A6E' : '#EDE8E0',
-                        color: m.role === 'user' ? 'white' : '#26302A',
-                        fontSize: 13, lineHeight: 1.55,
-                      }}>{m.text}</div>
-                    </div>
-                  ))}
-                  {loading && (
-                    <div style={{ display: 'flex', gap: 5, padding: '4px 8px' }}>
-                      {[0,1,2].map(i => (
-                        <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: '#B5603F', animation: `finnBob 1s ease-in-out ${i*0.2}s infinite` }}/>
-                      ))}
-                    </div>
-                  )}
-                  <div ref={chatEndRef}/>
-                </div>
-                <div style={{ padding: '8px 10px 12px', borderTop: '1px solid #D9D2C2', display: 'flex', gap: 6 }}>
-                  <input
-                    value={chatInput}
-                    onChange={e => setChatInput(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && sendMessage()}
-                    placeholder="Ask the HomeTend team..."
-                    style={{ flex: 1, border: '1.5px solid #D9D2C2', borderRadius: 999, padding: '8px 13px', fontSize: 13, fontFamily: 'Inter,sans-serif', outline: 'none', background: '#FCFBF8', color: '#26302A' }}
-                  />
-                  <button onClick={sendMessage} disabled={loading || !chatInput.trim()} style={{
-                    background: '#B5603F', border: 'none', borderRadius: '50%',
-                    width: 36, height: 36, cursor: 'pointer', flexShrink: 0,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    opacity: loading || !chatInput.trim() ? 0.4 : 1,
-                  }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Finn standing beside the panel */}
-          <img
-            src={FINN_IMAGE}
-            alt="HomeTend team"
-            className="finn-settled"
-            style={{
-              width: 190,
-              display: 'block',
-              filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.2))',
-              marginBottom: 0,
-              flexShrink: 0,
-            }}
-          />
-        </div>
-      )}
-    </>
-  );
-}
-
-function FinnCharacter() {
-  const [phase, setPhase] = useState('hidden');
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatInput, setChatInput] = useState('');
-  const [messages, setMessages] = useState([
-    { role: 'assistant', text: "Hi there! The HomeTend team is here to help. Whether you have questions about our services, pricing, or your current plan — ask away." }
-  ]);
-  const [loading, setLoading] = useState(false);
-  const chatEndRef = useRef(null);
-
-  useEffect(() => {
-    const t1 = setTimeout(() => setPhase('walking'), 1200);
     const t2 = setTimeout(() => setPhase('buffing'), 2600);
     const t3 = setTimeout(() => setPhase('nodding'), 4500);
     const t4 = setTimeout(() => setPhase('settling'), 5100);
@@ -1244,118 +1016,104 @@ Keep responses concise and warm. If you don't know something specific, say the t
   };
 
   const charStyle = () => {
-    const base = {
-      position: 'fixed', zIndex: 998, pointerEvents: 'none',
-      transition: 'right 1s cubic-bezier(0.4,0,0.2,1), bottom 0.9s cubic-bezier(0.4,0,0.2,1), transform 0.9s ease, opacity 0.4s',
-    };
     switch(phase) {
-      case 'hidden':   return { ...base, right: '-200px', bottom: 0, width: 130, opacity: 0 };
-      case 'walking':  return { ...base, right: 100, bottom: 0, width: 130, opacity: 1 };
-      case 'buffing':  return { ...base, right: 100, bottom: 0, width: 130, opacity: 1,
-        animation: 'finnBuff 0.35s ease-in-out infinite alternate', transformOrigin: '75% 30%' };
-      case 'nodding':  return { ...base, right: 100, bottom: 0, width: 130, opacity: 1 };
-      case 'settling': return { ...base, right: 16, bottom: 180, width: 100, opacity: 0.9 };
-      case 'settled':  return { ...base, right: 16, bottom: 180, width: 100, opacity: 0, pointerEvents: 'none' };
-      default:         return { ...base, opacity: 0 };
+      case 'walking':  return { position:'fixed', right:100, bottom:0, width:190, zIndex:99998, pointerEvents:'none', opacity:1, filter:'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', transition:'right 1.3s cubic-bezier(0.4,0,0.2,1)', animation:'finnWalkIn 1.3s cubic-bezier(0.4,0,0.2,1) forwards' };
+      case 'buffing':  return { position:'fixed', right:100, bottom:0, width:190, zIndex:99998, pointerEvents:'none', opacity:1, filter:'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', animation:'finnBuff 0.45s ease-in-out infinite', transformOrigin:'75% 35%' };
+      case 'nodding':  return { position:'fixed', right:100, bottom:0, width:190, zIndex:99998, pointerEvents:'none', opacity:1, filter:'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', animation:'finnNod 0.4s ease-in-out 3' };
+      default: return { display:'none' };
     }
   };
 
-  return (
+  return createPortal(
     <>
       <style>{`
+        @keyframes finnWalkIn {
+          from { right: -220px; opacity: 0; }
+          to   { right: 100px; opacity: 1; }
+        }
         @keyframes finnBuff {
-          from { transform: rotate(-10deg) translateX(-2px); }
-          to   { transform: rotate(8deg) translateX(3px); }
+          0%,100% { transform: rotate(0deg); }
+          25%  { transform: rotate(-10deg) translateX(-3px); }
+          75%  { transform: rotate(10deg) translateX(3px); }
         }
         @keyframes finnNod {
           0%,100% { transform: rotate(0deg); }
-          30% { transform: rotate(4deg); }
-          70% { transform: rotate(-2deg); }
+          30%  { transform: rotate(5deg); }
+          70%  { transform: rotate(-3deg); }
         }
         @keyframes finnBob {
           0%,100% { transform: translateY(0); }
-          50% { transform: translateY(-4px); }
+          50%  { transform: translateY(-5px); }
         }
-        @keyframes chatIn {
-          from { opacity:0; transform: scale(0.95) translateY(8px); }
-          to   { opacity:1; transform: scale(1) translateY(0); }
+        @keyframes chatSlideUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        .finn-nod { animation: finnNod 0.35s ease-in-out 3; }
       `}</style>
 
-      {/* Walking/buffing/nodding/settling character */}
-      {phase !== 'settled' && phase !== 'hidden' && (
-        <img
-          src={FINN_IMAGE}
-          alt=""
-          className={phase === 'nodding' ? 'finn-nod' : ''}
-          style={{
-            ...charStyle(),
-            display: 'block',
-            filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.18))',
-          }}
-        />
+      {/* Walking / buffing / nodding */}
+      {(phase === 'walking' || phase === 'buffing' || phase === 'nodding') && (
+        <img src={FINN_IMAGE} alt="" style={charStyle()} />
       )}
 
-      {/* Settled state — standing character + chat panel */}
+      {/* Settled — Finn beside chat panel, both anchored bottom-right */}
       {phase === 'settled' && (
-        <div style={{ position: 'fixed', bottom: 0, right: 16, zIndex: 999, display: 'flex', flexDirection: 'column', alignItems: 'center', width: 320 }}>
+        <div style={{ position:'fixed', bottom:0, right:0, zIndex:99999, display:'flex', alignItems:'flex-end' }}>
 
           {/* Chat panel */}
-          {chatOpen && (
-            <div style={{ width: '100%', background: '#FCFBF8', borderRadius: '20px 20px 0 0', boxShadow: '0 -4px 32px rgba(38,48,42,0.15)', border: '1px solid #D9D2C2', borderBottom: 'none', animation: 'chatIn 0.25s ease', marginBottom: 0 }}>
-              {/* Messages */}
-              <div style={{ height: 260, overflowY: 'auto', padding: '16px 14px 8px' }}>
-                {messages.map((m, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 8 }}>
-                    <div style={{
-                      maxWidth: '84%', padding: '8px 13px',
-                      borderRadius: m.role === 'user' ? '14px 14px 3px 14px' : '14px 14px 14px 3px',
-                      background: m.role === 'user' ? '#1A3A6E' : '#EDE8E0',
-                      color: m.role === 'user' ? 'white' : '#26302A',
-                      fontSize: 13, lineHeight: 1.5,
-                    }}>{m.text}</div>
-                  </div>
-                ))}
-                {loading && (
-                  <div style={{ display: 'flex', gap: 5, padding: '4px 8px' }}>
-                    {[0,1,2].map(i => <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: '#B5603F', animation: `finnBob 1s ease-in-out ${i*0.2}s infinite` }}/>)}
-                  </div>
-                )}
-                <div ref={chatEndRef}/>
-              </div>
-              {/* Input */}
-              <div style={{ padding: '8px 10px 12px', borderTop: '1px solid #D9D2C2', display: 'flex', gap: 6 }}>
-                <input
-                  value={chatInput}
-                  onChange={e => setChatInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && sendMessage()}
-                  placeholder="Ask the HomeTend team..."
-                  style={{ flex:1, border:'1.5px solid #D9D2C2', borderRadius:999, padding:'7px 12px', fontSize:13, fontFamily:'Inter,sans-serif', outline:'none', background:'#FCFBF8', color:'#26302A' }}
-                />
-                <button onClick={sendMessage} disabled={loading || !chatInput.trim()} style={{ background:'#B5603F', border:'none', borderRadius:'50%', width:34, height:34, cursor:'pointer', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', opacity: loading || !chatInput.trim() ? 0.4 : 1 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
-                </button>
-              </div>
-            </div>
-          )}
+          <div style={{ width:300, background:'#FCFBF8', borderRadius:'20px 0 0 0', boxShadow:'-4px -8px 40px rgba(38,48,42,0.18)', border:'1px solid #D9D2C2', borderRight:'none', borderBottom:'none', overflow:'hidden' }}>
 
-          {/* Standing Finn above chat bar */}
-          <div style={{ width: '100%', background: '#1A3A6E', borderRadius: chatOpen ? 0 : '20px 20px 0 0', padding: '10px 16px 0', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => setChatOpen(o => !o)}>
-            <div style={{ paddingBottom: 10 }}>
-              <div style={{ color: 'white', fontSize: 13, fontWeight: 700 }}>HomeTend Assistant</div>
-              <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 11, marginTop: 2 }}>{chatOpen ? 'Click to minimise' : 'Ask our team anything'}</div>
+            {/* Header */}
+            <div onClick={() => setChatOpen(o => !o)} style={{ background:'#1A3A6E', padding:'14px 18px', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'space-between', userSelect:'none' }}>
+              <div>
+                <div style={{ color:'white', fontSize:14, fontWeight:700 }}>HomeTend Assistant</div>
+                <div style={{ color:'rgba(255,255,255,0.6)', fontSize:11, marginTop:2 }}>{chatOpen ? 'Click to close ↓' : 'Ask our team anything ↑'}</div>
+              </div>
+              <div style={{ width:10, height:10, borderRadius:'50%', background:'#4CAF50', boxShadow:'0 0 8px #4CAF50' }}/>
             </div>
-            <img
-              src={FINN_IMAGE}
-              alt="HomeTend team"
-              style={{ width: 90, display: 'block', marginBottom: -1, filter: 'drop-shadow(0 -2px 8px rgba(0,0,0,0.2))' }}
-            />
+
+            {/* Messages + input */}
+            {chatOpen && (
+              <div style={{ animation:'chatSlideUp 0.2s ease' }}>
+                <div style={{ height:340, overflowY:'auto', padding:'14px 14px 8px' }}>
+                  {messages.map((m,i) => (
+                    <div key={i} style={{ display:'flex', justifyContent:m.role==='user'?'flex-end':'flex-start', marginBottom:10 }}>
+                      <div style={{ maxWidth:'84%', padding:'9px 13px', borderRadius:m.role==='user'?'14px 14px 3px 14px':'14px 14px 14px 3px', background:m.role==='user'?'#1A3A6E':'#EDE8E0', color:m.role==='user'?'white':'#26302A', fontSize:13, lineHeight:1.55 }}>{m.text}</div>
+                    </div>
+                  ))}
+                  {loading && (
+                    <div style={{ display:'flex', gap:5, padding:'4px 8px' }}>
+                      {[0,1,2].map(i => <div key={i} style={{ width:7, height:7, borderRadius:'50%', background:'#B5603F', animation:`finnBob 1s ease-in-out ${i*0.2}s infinite` }}/>)}
+                    </div>
+                  )}
+                  <div ref={chatEndRef}/>
+                </div>
+                <div style={{ padding:'8px 10px 12px', borderTop:'1px solid #D9D2C2', display:'flex', gap:6 }}>
+                  <input
+                    value={chatInput}
+                    onChange={e => setChatInput(e.target.value)}
+                    onKeyDown={e => e.key==='Enter' && sendMessage()}
+                    placeholder="Ask the HomeTend team..."
+                    style={{ flex:1, border:'1.5px solid #D9D2C2', borderRadius:999, padding:'8px 13px', fontSize:13, fontFamily:'Inter,sans-serif', outline:'none', background:'#FCFBF8', color:'#26302A' }}
+                  />
+                  <button onClick={sendMessage} disabled={loading||!chatInput.trim()} style={{ background:'#B5603F', border:'none', borderRadius:'50%', width:36, height:36, cursor:'pointer', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', opacity:loading||!chatInput.trim()?0.4:1 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
+          {/* Finn standing beside panel */}
+          <img
+            src={FINN_IMAGE}
+            alt="HomeTend team"
+            style={{ width:200, display:'block', flexShrink:0, filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.2))', animation:'finnBob 4s ease-in-out infinite' }}
+          />
         </div>
       )}
-    </>
+    </>,
+    document.body
   );
 }
 

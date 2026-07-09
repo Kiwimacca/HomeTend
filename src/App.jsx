@@ -928,15 +928,73 @@ function SignupModal({ plan, total, quote, frequencyByService, onClose }) {
 // ── FINN CHARACTER + CHAT ─────────────────────────────────────────────────
 const FINN_IMAGE = '/finn.png';
 
+// Finn's entrance: slides in from right, oscillates at button, drops to corner
+// All driven by a single CSS animation on the img element — no JS timers needed
+const FINN_ENTRANCE_STYLE = `
+  @keyframes finnEntrance {
+    /* Slide in from right to button position */
+    0%   { right: -220px; bottom: 0; width: 130px; opacity: 0; transform: rotate(0deg); }
+    15%  { right: -220px; bottom: 0; width: 130px; opacity: 0; transform: rotate(0deg); }
+    35%  { right: 110px;  bottom: 0; width: 130px; opacity: 1; transform: rotate(0deg); }
+    /* Buff oscillation at button */
+    40%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(-8deg) translateX(-3px); }
+    45%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(8deg) translateX(3px); }
+    50%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(-8deg) translateX(-3px); }
+    55%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(8deg) translateX(3px); }
+    60%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(-8deg) translateX(-3px); }
+    65%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(8deg) translateX(3px); }
+    /* Nod of satisfaction */
+    70%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(5deg); }
+    75%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(-3deg); }
+    78%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(0deg); }
+    /* Slide down to settled position */
+    90%  { right: 0; bottom: 0; width: 220px; opacity: 1; transform: rotate(0deg); }
+    100% { right: 0; bottom: 0; width: 220px; opacity: 1; transform: rotate(0deg); }
+  }
+  @keyframes finnBob {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  #finn-entrance {
+    position: fixed !important;
+    z-index: 99998;
+    pointer-events: none;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.2));
+    animation: finnEntrance 7s cubic-bezier(0.4,0,0.2,1) forwards;
+    animation-delay: 1s;
+    right: -220px;
+    bottom: 0;
+    width: 130px;
+    opacity: 0;
+  }
+`;
+
 function FinnCharacter() {
   const [open, setOpen] = React.useState(false);
+  const [entered, setEntered] = React.useState(false);
+
+  React.useEffect(() => {
+    // After entrance animation completes (8s total), show the settled widget
+    const t = setTimeout(() => setEntered(true), 8500);
+    return () => clearTimeout(t);
+  }, []);
   const [input, setInput] = React.useState('');
   const [msgs, setMsgs] = React.useState([
     { role: 'assistant', text: 'Hi! The HomeTend team is here to help. Ask us anything about our services, pricing, or your plan.' }
   ]);
   const [loading, setLoading] = React.useState(false);
+  const [panelHeight, setPanelHeight] = React.useState(400);
   const endRef = React.useRef(null);
   React.useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
+  React.useEffect(() => {
+    const measure = () => {
+      const reel = document.querySelector('.film-reel-wrap');
+      if (reel) setPanelHeight(reel.getBoundingClientRect().height);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
 
   const send = async () => {
     if (!input.trim() || loading) return;
@@ -962,7 +1020,17 @@ function FinnCharacter() {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999, display: 'flex', alignItems: 'flex-end' }}>
+    <>
+      <style>{FINN_ENTRANCE_STYLE}</style>
+
+      {/* Entrance animation — slides in, buffs button, drops to corner */}
+      {!entered && (
+        <img id="finn-entrance" src={FINN_IMAGE} alt="" />
+      )}
+
+      {/* Settled widget */}
+      {entered && (
+      <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999, display: 'flex', alignItems: 'flex-end' }}>
       {open && (
         <div style={{ width: 320, background: '#FCFBF8', height: 280, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>
@@ -1008,6 +1076,8 @@ function FinnCharacter() {
         </div>
       </div>
     </div>
+      )}
+    </>
   );
 }
 
@@ -1939,7 +2009,6 @@ export default function App() {
           overflow: hidden;
           border-top: 1px solid #2E3830;
           border-bottom: 1px solid #2E3830;
-          height: 330px;
         }
         .film-sprockets {
           display: flex;

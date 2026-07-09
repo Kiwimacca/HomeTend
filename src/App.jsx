@@ -974,9 +974,31 @@ function FinnCharacter() {
   const [entered, setEntered] = React.useState(false);
 
   React.useEffect(() => {
-    // After entrance animation completes (8s total), show the settled widget
-    const t = setTimeout(() => setEntered(true), 8500);
-    return () => clearTimeout(t);
+    // Inject style tag directly into head
+    const styleEl = document.createElement('style');
+    styleEl.textContent = FINN_ENTRANCE_STYLE;
+    document.head.appendChild(styleEl);
+
+    // Inject Finn image directly into body — bypasses any parent CSS transforms
+    const img = document.createElement('img');
+    img.id = 'finn-entrance';
+    img.src = FINN_IMAGE;
+    img.alt = '';
+    document.body.appendChild(img);
+
+    // Remove entrance image and show settled widget after animation completes
+    const t = setTimeout(() => {
+      const el = document.getElementById('finn-entrance');
+      if (el) el.remove();
+      setEntered(true);
+    }, 8500);
+
+    return () => {
+      clearTimeout(t);
+      const el = document.getElementById('finn-entrance');
+      if (el) el.remove();
+      styleEl.remove();
+    };
   }, []);
   const [input, setInput] = React.useState('');
   const [msgs, setMsgs] = React.useState([
@@ -1021,18 +1043,11 @@ function FinnCharacter() {
 
   return (
     <>
-      <style>{FINN_ENTRANCE_STYLE}</style>
-
-      {/* Entrance animation — slides in, buffs button, drops to corner */}
-      {!entered && (
-        <img id="finn-entrance" src={FINN_IMAGE} alt="" />
-      )}
-
-      {/* Settled widget */}
+      {/* Settled widget — appears after entrance animation completes */}
       {entered && (
       <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999, display: 'flex', alignItems: 'flex-end' }}>
       {open && (
-        <div style={{ width: 320, background: '#FCFBF8', height: 280, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ width: 320, background: '#FCFBF8', height: panelHeight, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>
             {msgs.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>

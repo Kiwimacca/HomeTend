@@ -1005,7 +1005,7 @@ function FinnCharacter() {
     { role: 'assistant', text: 'Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan.' }
   ]);
   const [loading, setLoading] = React.useState(false);
-  const [panelHeight, setPanelHeight] = React.useState(400);
+  const [panelHeight, setPanelHeight] = React.useState(330);
   const endRef = React.useRef(null);
   React.useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
   React.useEffect(() => {
@@ -1080,11 +1080,11 @@ function FinnCharacter() {
           src={FINN_IMAGE}
           alt=""
           onClick={() => setOpen(o => !o)}
-          style={{ width: 220, display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', position: 'relative', zIndex: 1 }}
+          style={{ width: 200, height: 290, objectFit: 'cover', objectPosition: 'top', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', position: 'relative', zIndex: 1 }}
         />
         <div
           onClick={() => setOpen(o => !o)}
-          style={{ width: 220, background: '#1A3A6E', padding: '12px 16px', cursor: 'pointer', textAlign: 'center' }}
+          style={{ width: 200, background: '#1A3A6E', padding: '10px 14px', cursor: 'pointer', textAlign: 'center' }}
         >
           <div style={{ color: 'white', fontSize: 14, fontWeight: 700 }}>Luke — HomeTend Assistant</div>
           <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>{open ? 'Click to close ↓' : 'Ask us anything ↑'}</div>
@@ -2024,6 +2024,7 @@ export default function App() {
           overflow: hidden;
           border-top: 1px solid #2E3830;
           border-bottom: 1px solid #2E3830;
+          height: 330px;
         }
         .film-sprockets {
           display: flex;

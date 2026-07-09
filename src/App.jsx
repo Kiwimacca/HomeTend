@@ -1002,7 +1002,7 @@ function FinnCharacter() {
   }, []);
   const [input, setInput] = React.useState('');
   const [msgs, setMsgs] = React.useState([
-    { role: 'assistant', text: 'Hi! The HomeTend team is here to help. Ask us anything about our services, pricing, or your plan.' }
+    { role: 'assistant', text: 'Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan.' }
   ]);
   const [loading, setLoading] = React.useState(false);
   const [panelHeight, setPanelHeight] = React.useState(400);
@@ -1045,9 +1045,9 @@ function FinnCharacter() {
     <>
       {/* Settled widget — appears after entrance animation completes */}
       {entered && (
-      <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999, display: 'flex', alignItems: 'flex-end' }}>
+      <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999 }}>
       {open && (
-        <div style={{ width: 320, background: '#FCFBF8', height: panelHeight, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ position: 'absolute', bottom: 0, right: 0, width: 320, background: '#FCFBF8', height: panelHeight, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>
             {msgs.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
@@ -1075,18 +1075,18 @@ function FinnCharacter() {
           </div>
         </div>
       )}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <img
           src={FINN_IMAGE}
           alt=""
           onClick={() => setOpen(o => !o)}
-          style={{ width: 220, display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))' }}
+          style={{ width: 220, display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', position: 'relative', zIndex: 1 }}
         />
         <div
           onClick={() => setOpen(o => !o)}
           style={{ width: 220, background: '#1A3A6E', padding: '12px 16px', cursor: 'pointer', textAlign: 'center' }}
         >
-          <div style={{ color: 'white', fontSize: 14, fontWeight: 700 }}>HomeTend Assistant</div>
+          <div style={{ color: 'white', fontSize: 14, fontWeight: 700 }}>Luke — HomeTend Assistant</div>
           <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>{open ? 'Click to close ↓' : 'Ask us anything ↑'}</div>
         </div>
       </div>
@@ -1222,28 +1222,28 @@ export default function App() {
           font-size: 13px;
           font-weight: 700;
           cursor: pointer;
-          transition: background 0.2s, transform 0.2s;
+          transition: background 0.2s;
           font-family: 'Inter', sans-serif;
           position: relative;
           overflow: hidden;
-          animation: btnBuff 0.4s ease-in-out 3s 6 alternate;
+          animation: btnBuff 0.35s ease-in-out 3.5s 8 alternate;
         }
         @keyframes btnBuff {
-          0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0); transform: scale(1); }
-          50%  { box-shadow: 0 0 0 4px rgba(255,255,255,0.5), 0 0 18px rgba(181,96,63,0.6); transform: scale(1.06); }
-          100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); transform: scale(1); }
+          0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0), 0 0 0 rgba(181,96,63,0); transform: scale(1); background: var(--clay); }
+          50%  { box-shadow: 0 0 0 6px rgba(255,255,255,0.8), 0 0 28px rgba(255,200,100,0.8); transform: scale(1.12); background: #D4703A; }
+          100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); transform: scale(1); background: var(--clay); }
         }
         .nav-git-btn::after {
           content: '';
           position: absolute;
-          top: 0; left: -100%;
-          width: 60%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-          animation: btnShine 0.6s ease-in-out 3s 6;
+          top: -20%; left: -120%;
+          width: 80%;
+          height: 140%;
+          background: linear-gradient(105deg, transparent, rgba(255,255,255,0.7), transparent);
+          animation: btnShine 0.45s ease-in-out 3.5s 8;
         }
         @keyframes btnShine {
-          0%   { left: -100%; }
+          0%   { left: -120%; }
           100% { left: 200%; }
         }
         .nav-git-btn:hover { background: #A0522D; transform: translateY(-1px); }

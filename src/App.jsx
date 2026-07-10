@@ -1005,8 +1005,22 @@ function FinnCharacter() {
     { role: 'assistant', text: 'Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan.' }
   ]);
   const [loading, setLoading] = React.useState(false);
+  const [reelTop, setReelTop] = React.useState(477);
   const endRef = React.useRef(null);
   React.useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
+  React.useEffect(() => {
+    const measure = () => {
+      const reel = document.querySelector('.film-reel-wrap');
+      if (reel) setReelTop(reel.getBoundingClientRect().top + window.scrollY);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    window.addEventListener('scroll', measure);
+    return () => {
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('scroll', measure);
+    };
+  }, []);
 
   const send = async () => {
     if (!input.trim() || loading) return;
@@ -1035,7 +1049,7 @@ function FinnCharacter() {
     <>
       {/* Settled widget — appears after entrance animation completes */}
       {entered && (
-      <div style={{ position: 'fixed', top: 477, right: 0, zIndex: 9999 }}>
+      <div style={{ position: 'fixed', top: reelTop, right: 0, zIndex: 9999 }}>
       {open && (
         <div style={{ position: 'absolute', bottom: 0, right: 0, width: 320, background: '#FCFBF8', height: 330, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>

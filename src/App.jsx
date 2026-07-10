@@ -1002,7 +1002,7 @@ function FinnCharacter() {
   }, []);
   const [input, setInput] = React.useState('');
   const [msgs, setMsgs] = React.useState([
-    { role: 'assistant', text: 'Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan.' }
+    { role: 'assistant', text: "Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan." }
   ]);
   const [loading, setLoading] = React.useState(false);
   const [panelHeight, setPanelHeight] = React.useState(340);

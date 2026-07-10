@@ -1035,7 +1035,7 @@ function FinnCharacter() {
     <>
       {/* Settled widget — appears after entrance animation completes */}
       {entered && (
-      <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999 }}>
+      <div style={{ position: 'fixed', top: 477, right: 0, zIndex: 9999 }}>
       {open && (
         <div style={{ position: 'absolute', bottom: 0, right: 0, width: 320, background: '#FCFBF8', height: 330, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>

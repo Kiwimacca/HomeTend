@@ -1002,7 +1002,7 @@ function FinnCharacter() {
   }, []);
   const [input, setInput] = React.useState('');
   const [msgs, setMsgs] = React.useState([
-    { role: 'assistant', text: "Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan." }
+    { role: 'assistant', text: 'Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan.' }
   ]);
   const [loading, setLoading] = React.useState(false);
   const [panelHeight, setPanelHeight] = React.useState(340);
@@ -1080,7 +1080,7 @@ function FinnCharacter() {
           src={FINN_IMAGE}
           alt=""
           onClick={() => setOpen(o => !o)}
-          style={{ width: 360, height: 290, objectFit: 'cover', objectPosition: 'top center', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', position: 'relative', zIndex: 1 }}
+          style={{ width: 360, height: 252, objectFit: 'cover', objectPosition: 'top center', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', position: 'relative', zIndex: 1 }}
         />
         <div
           onClick={() => setOpen(o => !o)}
@@ -1559,6 +1559,7 @@ export default function App() {
           gap: 0;
           max-width: 1400px;
           margin: 0 auto;
+          padding-right: 365px;
         }
         .fold-pane {
           padding: 24px 22px;
@@ -2024,8 +2025,7 @@ export default function App() {
           overflow: hidden;
           border-top: 1px solid #2E3830;
           border-bottom: 1px solid #2E3830;
-          height: 340px;
-          min-height: 340px;
+          height: 292px;
         }
         .film-sprockets {
           display: flex;

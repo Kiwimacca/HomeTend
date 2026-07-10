@@ -1005,18 +1005,8 @@ function FinnCharacter() {
     { role: 'assistant', text: 'Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan.' }
   ]);
   const [loading, setLoading] = React.useState(false);
-  const [panelHeight, setPanelHeight] = React.useState(340);
   const endRef = React.useRef(null);
   React.useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
-  React.useEffect(() => {
-    const measure = () => {
-      const reel = document.querySelector('.film-reel-wrap');
-      if (reel) setPanelHeight(reel.getBoundingClientRect().height);
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
-  }, []);
 
   const send = async () => {
     if (!input.trim() || loading) return;
@@ -1047,7 +1037,7 @@ function FinnCharacter() {
       {entered && (
       <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999 }}>
       {open && (
-        <div style={{ position: 'absolute', bottom: 0, right: 0, width: 320, background: '#FCFBF8', height: panelHeight, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
+        <div style={{ position: 'absolute', bottom: 0, right: 0, width: 320, background: '#FCFBF8', height: 292, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>
             {msgs.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>

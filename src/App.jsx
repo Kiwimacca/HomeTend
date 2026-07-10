@@ -1005,7 +1005,7 @@ function FinnCharacter() {
     { role: 'assistant', text: 'Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan.' }
   ]);
   const [loading, setLoading] = React.useState(false);
-  const [panelHeight, setPanelHeight] = React.useState(330);
+  const [panelHeight, setPanelHeight] = React.useState(340);
   const endRef = React.useRef(null);
   React.useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
   React.useEffect(() => {
@@ -2024,7 +2024,8 @@ export default function App() {
           overflow: hidden;
           border-top: 1px solid #2E3830;
           border-bottom: 1px solid #2E3830;
-          height: 330px;
+          height: 340px;
+          min-height: 340px;
         }
         .film-sprockets {
           display: flex;
@@ -2654,7 +2655,7 @@ export default function App() {
 
         {/* Pane 1: Headline + property inputs */}
         <div className="fold-pane fold-pane-hero">
-          <h1 className="fold-headline">Your home is your biggest asset,<br/><em>let us tend to your maintenance needs.</em></h1>
+          <h1 className="fold-headline">Your home is your biggest<br/>asset, let us tend to your<br/><em>maintenance needs.</em></h1>
           <div className="fold-step-heading">Step 1 — Your house size</div>
           <div className="fold-inputs">
             <div className="fold-input-group">

@@ -1037,7 +1037,7 @@ function FinnCharacter() {
       {entered && (
       <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999 }}>
       {open && (
-        <div style={{ position: 'absolute', bottom: 0, right: 0, width: 320, background: '#FCFBF8', height: 292, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
+        <div style={{ position: 'absolute', bottom: 0, right: 0, width: 320, background: '#FCFBF8', height: 330, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>
             {msgs.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
@@ -1065,12 +1065,12 @@ function FinnCharacter() {
           </div>
         </div>
       )}
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden', height: 292 }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <img
           src={FINN_IMAGE}
           alt=""
           onClick={() => setOpen(o => !o)}
-          style={{ width: 360, height: 252, objectFit: 'cover', objectPosition: 'top center', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', position: 'relative', zIndex: 1 }}
+          style={{ width: 360, display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', position: 'relative', zIndex: 1 }}
         />
         <div
           onClick={() => setOpen(o => !o)}
@@ -2015,7 +2015,7 @@ export default function App() {
           overflow: hidden;
           border-top: 1px solid #2E3830;
           border-bottom: 1px solid #2E3830;
-          height: 292px;
+          height: 330px;
         }
         .film-sprockets {
           display: flex;

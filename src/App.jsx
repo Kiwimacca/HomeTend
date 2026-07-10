@@ -948,8 +948,8 @@ const FINN_ENTRANCE_STYLE = `
     75%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(-3deg); }
     78%  { right: 110px; bottom: 0; width: 130px; opacity: 1; transform: rotate(0deg); }
     /* Slide down to settled position */
-    90%  { right: 0; bottom: 0; width: 220px; opacity: 1; transform: rotate(0deg); }
-    100% { right: 0; bottom: 0; width: 220px; opacity: 1; transform: rotate(0deg); }
+    90%  { right: 0; bottom: 0; width: 360px; opacity: 1; transform: rotate(0deg); }
+    100% { right: 0; bottom: 0; width: 360px; opacity: 1; transform: rotate(0deg); }
   }
   @keyframes finnBob {
     0%,100% { transform: translateY(0); }
@@ -1080,11 +1080,11 @@ function FinnCharacter() {
           src={FINN_IMAGE}
           alt=""
           onClick={() => setOpen(o => !o)}
-          style={{ width: 200, height: 290, objectFit: 'cover', objectPosition: 'top', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', position: 'relative', zIndex: 1 }}
+          style={{ width: 360, height: 290, objectFit: 'cover', objectPosition: 'top center', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', position: 'relative', zIndex: 1 }}
         />
         <div
           onClick={() => setOpen(o => !o)}
-          style={{ width: 200, background: '#1A3A6E', padding: '10px 14px', cursor: 'pointer', textAlign: 'center' }}
+          style={{ width: 360, height: 40, background: '#1A3A6E', padding: '0 16px', cursor: 'pointer', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
         >
           <div style={{ color: 'white', fontSize: 14, fontWeight: 700 }}>Luke — HomeTend Assistant</div>
           <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>{open ? 'Click to close ↓' : 'Ask us anything ↑'}</div>
@@ -2897,8 +2897,8 @@ export default function App() {
               <button onClick={() => { setShowContact(false); }} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 18px', background:'#1A3A6E', border:'none', borderRadius:14, cursor:'pointer', textAlign:'left' }}>
                 <span style={{ fontSize:22 }}>💬</span>
                 <div>
-                  <div style={{ color:'white', fontSize:14, fontWeight:700 }}>Chat with our assistant</div>
-                  <div style={{ color:'rgba(255,255,255,0.65)', fontSize:12 }}>AI-powered · replies instantly</div>
+                  <div style={{ color:'white', fontSize:14, fontWeight:700 }}>Chat with Luke</div>
+                  <div style={{ color:'rgba(255,255,255,0.65)', fontSize:12 }}>Your HomeTend Assistant · replies instantly</div>
                 </div>
               </button>
 

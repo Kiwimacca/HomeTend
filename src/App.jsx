@@ -1005,21 +1005,12 @@ function FinnCharacter() {
     { role: 'assistant', text: "Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan." }
   ]);
   const [loading, setLoading] = React.useState(false);
-  const [reelTop, setReelTop] = React.useState(477);
+  const [reelTop, setReelTop] = React.useState(0);
   const endRef = React.useRef(null);
   React.useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
   React.useEffect(() => {
-    const measure = () => {
-      const reel = document.querySelector('.film-reel-wrap');
-      if (reel) setReelTop(reel.getBoundingClientRect().top + window.scrollY);
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    window.addEventListener('scroll', measure);
-    return () => {
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('scroll', measure);
-    };
+    const reel = document.querySelector('.film-reel-wrap');
+    if (reel) setReelTop(reel.offsetTop);
   }, []);
 
   const send = async () => {
@@ -1563,7 +1554,6 @@ export default function App() {
           gap: 0;
           max-width: 1400px;
           margin: 0 auto;
-          padding-right: 365px;
         }
         .fold-pane {
           padding: 24px 22px;

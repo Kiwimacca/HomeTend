@@ -2590,7 +2590,7 @@ export default function App() {
 
         {/* Pane 1: Headline + property inputs */}
         <div className="fold-pane fold-pane-hero">
-          <h1 className="fold-headline">Your home is your biggest<br/>asset, let us tend to your<br/><em>maintenance needs.</em></h1>
+          <h1 className="fold-headline">Your home is your biggest<br/>asset, <em>let us tend to your<br/>maintenance needs.</em></h1>
           <div className="fold-step-heading">Step 1 — Your house size</div>
           <div className="fold-inputs">
             <div className="fold-input-group">

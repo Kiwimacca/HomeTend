@@ -1040,9 +1040,9 @@ function FinnCharacter() {
     <>
       {/* Settled widget — appears after entrance animation completes */}
       {entered && (
-      <div style={{ position: 'fixed', top: reelTop, right: 0, height: 330, zIndex: 9999 }}>
+      <div style={{ position: 'fixed', top: reelTop, right: 0, width: 320, height: 330, zIndex: 9999 }}>
       {open && (
-        <div style={{ position: 'absolute', bottom: 0, right: 0, width: 320, background: '#FCFBF8', height: 330, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, width: 320, background: '#FCFBF8', height: 330, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>
             {msgs.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
@@ -1070,16 +1070,16 @@ function FinnCharacter() {
           </div>
         </div>
       )}
-      <div style={{ position: 'relative', zIndex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
+      <div style={{ position: 'relative', zIndex: 1, width: 320, height: 330, display: 'flex', flexDirection: 'column' }}>
         <img
           src={FINN_IMAGE}
           alt=""
           onClick={() => setOpen(o => !o)}
-          style={{ width: 360, display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))', position: 'relative', zIndex: 1 }}
+          style={{ width: 320, height: 290, objectFit: 'contain', objectPosition: 'bottom center', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))' }}
         />
         <div
           onClick={() => setOpen(o => !o)}
-          style={{ width: 360, height: 40, background: '#1A3A6E', padding: '0 16px', cursor: 'pointer', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+          style={{ width: 320, height: 40, flexShrink: 0, background: '#1A3A6E', padding: '0 16px', cursor: 'pointer', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
         >
           <div style={{ color: 'white', fontSize: 14, fontWeight: 700 }}>Luke — HomeTend Assistant</div>
           <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>{open ? 'Click to close ↓' : 'Ask us anything ↑'}</div>

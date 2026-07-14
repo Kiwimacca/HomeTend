@@ -49,13 +49,13 @@ const BEDROOM_BANDS = [
 
 // Rate per single visit/year (monthly-equivalent, with ~12% reliability premium).
 const SERVICE_RATES = {
-  'house-wash': 25,
-  'roof':       37,
-  'gutter':     17,
-  'windows':     8.5,
-  'driveway':   20,
-  'hvac':       13,
-  'spider':     11,
+  'house-wash': 28,
+  'roof':       42,
+  'gutter':     19,
+  'windows':     9,
+  'driveway':   22,
+  'hvac':       16,
+  'spider':     13,
 };
 
 const STOREY_SURCHARGE = { 1: 0, 2: 6, 3: 12 };
@@ -83,7 +83,7 @@ function calculateQuote({ selected, bedrooms, storeys, hvacOutlets, frequencyByS
 
     if (id === 'hvac') {
       const extraOutlets = Math.max(0, (hvacOutlets || 1) - 1);
-      line += extraOutlets * 9;
+      line += extraOutlets * 13;
     }
 
     line = Math.round(line);

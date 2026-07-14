@@ -1070,13 +1070,15 @@ function FinnCharacter() {
           </div>
         </div>
       )}
-      <div style={{ position: 'relative', zIndex: 1, width: 320, height: 330, display: 'flex', flexDirection: 'column' }}>
-        <img
-          src={FINN_IMAGE}
-          alt=""
-          onClick={() => setOpen(o => !o)}
-          style={{ width: 320, height: 290, objectFit: 'contain', objectPosition: 'bottom center', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))' }}
-        />
+      <div style={{ position: 'relative', zIndex: 1, width: 320, height: 330, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
+          <img
+            src={FINN_IMAGE}
+            alt=""
+            onClick={() => setOpen(o => !o)}
+            style={{ width: 320, height: 'auto', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))' }}
+          />
+        </div>
         <div
           onClick={() => setOpen(o => !o)}
           style={{ width: 320, height: 40, flexShrink: 0, background: '#1A3A6E', padding: '0 16px', cursor: 'pointer', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}

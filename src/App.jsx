@@ -1043,7 +1043,7 @@ function FinnCharacter() {
       <div style={{ position: 'fixed', top: reelTop, right: 0, width: 320, height: 330, zIndex: 9999 }}>
       {open && (
         <div style={{ position: 'absolute', top: 0, left: 0, width: 320, background: '#FCFBF8', height: 330, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '14px 14px 8px' }}>
             {msgs.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
                 <div style={{ maxWidth: '84%', padding: '9px 13px', borderRadius: m.role === 'user' ? '14px 14px 3px 14px' : '14px 14px 14px 3px', background: m.role === 'user' ? '#1A3A6E' : '#EDE8E0', color: m.role === 'user' ? 'white' : '#26302A', fontSize: 13, lineHeight: 1.55 }}>{m.text}</div>

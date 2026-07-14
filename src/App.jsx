@@ -1132,14 +1132,14 @@ export default function App() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 22px 6vw;
+          padding: 14px 6vw;
           transition: background 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
         }
         .nav.scrolled {
           background: rgba(252, 251, 248, 0.92);
           backdrop-filter: blur(8px);
           box-shadow: 0 1px 0 var(--line);
-          padding: 14px 6vw;
+          padding: 10px 6vw;
         }
         .nav-logo {
           font-family: 'Fraunces', serif;
@@ -1495,7 +1495,7 @@ export default function App() {
           margin: 0 auto;
         }
         .fold-pane {
-          padding: 24px 22px;
+          padding: 14px 18px;
           display: flex;
           flex-direction: column;
           background: var(--paper);
@@ -1515,8 +1515,8 @@ export default function App() {
           letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--clay-dark);
-          margin-bottom: 14px;
-          padding-bottom: 10px;
+          margin-bottom: 8px;
+          padding-bottom: 6px;
           border-bottom: 1px solid var(--line);
         }
         .fold-service-row-main {
@@ -1543,9 +1543,9 @@ export default function App() {
           gap: 0;
         }
         .fold-headline {
-          font-size: clamp(20px, 2.8vw, 32px);
-          line-height: 1.15;
-          margin: 0 0 18px;
+          font-size: clamp(17px, 2vw, 26px);
+          line-height: 1.1;
+          margin: 0 0 10px;
         }
         .fold-headline em {
           font-style: italic;
@@ -1553,8 +1553,8 @@ export default function App() {
         }
         .fold-inputs {
           display: flex;
-          gap: 18px;
-          margin-bottom: 12px;
+          gap: 12px;
+          margin-bottom: 8px;
           flex-wrap: wrap;
         }
         .fold-input-group label {
@@ -1582,8 +1582,8 @@ export default function App() {
           100% { box-shadow: 0 0 0 0 rgba(181,96,63,0); }
         }
         .fold-service-row {
-          border-radius: 8px;
-          padding: 4px 8px;
+          border-radius: 6px;
+          padding: 2px 6px;
           background: transparent;
           transition: background 0.12s;
         }
@@ -1633,19 +1633,19 @@ export default function App() {
         }
         .fold-freq-pills {
           display: flex;
-          gap: 5px;
+          gap: 4px;
           flex-wrap: wrap;
-          margin-top: 4px;
+          margin-top: 2px;
           margin-left: 26px;
-          margin-bottom: 4px;
+          margin-bottom: 2px;
         }
         .fold-addon {
           display: flex;
           align-items: center;
           gap: 5px;
-          margin-top: 4px;
+          margin-top: 2px;
           margin-left: 26px;
-          margin-bottom: 4px;
+          margin-bottom: 2px;
           font-size: 11px;
           color: #8A8576;
           font-weight: 600;
@@ -1655,8 +1655,8 @@ export default function App() {
         .fold-price-card {
           background: var(--ink);
           color: var(--paper);
-          padding: 22px 20px;
-          border-radius: 16px;
+          padding: 14px 16px;
+          border-radius: 14px;
           box-shadow: 0 8px 32px rgba(38,48,42,0.18);
         }
         .fold-price-label {
@@ -1670,8 +1670,8 @@ export default function App() {
         }
         .fold-price-amount {
           font-family: 'Fraunces', serif;
-          font-size: 44px;
-          margin: 6px 0 4px;
+          font-size: 36px;
+          margin: 4px 0 3px;
           line-height: 1;
         }
         .fold-price-amount span { font-size: 14px; opacity: 0.65; }
@@ -1685,7 +1685,7 @@ export default function App() {
           display: flex;
           align-items: center;
           gap: 8px;
-          margin: 10px 0 8px;
+          margin: 6px 0 6px;
         }
         .fold-price-block {
           flex: 1;

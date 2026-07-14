@@ -971,47 +971,13 @@ const FINN_ENTRANCE_STYLE = `
 
 function FinnCharacter() {
   const [open, setOpen] = React.useState(false);
-  const [entered, setEntered] = React.useState(false);
-
-  React.useEffect(() => {
-    // Inject style tag directly into head
-    const styleEl = document.createElement('style');
-    styleEl.textContent = FINN_ENTRANCE_STYLE;
-    document.head.appendChild(styleEl);
-
-    // Inject Finn image directly into body — bypasses any parent CSS transforms
-    const img = document.createElement('img');
-    img.id = 'finn-entrance';
-    img.src = FINN_IMAGE;
-    img.alt = '';
-    document.body.appendChild(img);
-
-    // Remove entrance image and show settled widget after animation completes
-    const t = setTimeout(() => {
-      const el = document.getElementById('finn-entrance');
-      if (el) el.remove();
-      setEntered(true);
-    }, 8500);
-
-    return () => {
-      clearTimeout(t);
-      const el = document.getElementById('finn-entrance');
-      if (el) el.remove();
-      styleEl.remove();
-    };
-  }, []);
   const [input, setInput] = React.useState('');
   const [msgs, setMsgs] = React.useState([
-    { role: 'assistant', text: "Hey, I'm Luke — your HomeTend Assistant. Ask me anything about our services, pricing, or your plan." }
+    { role: 'assistant', text: "Hi! I'm Luke, your HomeTend Assistant. Ask me anything about our services or pricing." }
   ]);
   const [loading, setLoading] = React.useState(false);
-  const [reelTop, setReelTop] = React.useState(0);
   const endRef = React.useRef(null);
   React.useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
-  React.useEffect(() => {
-    const reel = document.querySelector('.film-reel-wrap');
-    if (reel) setReelTop(reel.offsetTop);
-  }, []);
 
   const send = async () => {
     if (!input.trim() || loading) return;
@@ -1025,69 +991,53 @@ function FinnCharacter() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6', max_tokens: 800,
-          system: 'You are the HomeTend team assistant. HomeTend is a subscription home maintenance service in Christchurch NZ. Services: House Wash, Roof Wash, Gutter Clean, Window Clean, Driveway Clean, HVAC Maintenance, Spider Control. Average plan ~$100/month. 50% deposit upfront + 11 monthly payments year 1. Year 2: 12 equal monthly payments. Fully insured. Same crew every visit. Photo after each visit. Cancel anytime with 30 days notice. Email: hello@hometend.co.nz. Be warm, concise, helpful.',
+          model: 'claude-sonnet-4-6',
+          max_tokens: 800,
+          system: 'You are Luke, the HomeTend team assistant. HomeTend is a subscription home maintenance service in Christchurch NZ. Services: House Wash, Roof Wash, Gutter Clean, Window Clean, Driveway Clean, HVAC Maintenance, Spider Control. Average plan $100/month. 50% deposit + 11 monthly payments year 1. Year 2: 12 equal monthly payments. Fully insured. Same crew every visit. Photo after each visit. Cancel anytime 30 days notice. Email: hello@hometend.co.nz. Be warm, concise, helpful.',
           messages: next.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
         })
       });
       const d = await r.json();
       setMsgs(m => [...m, { role: 'assistant', text: d.content?.[0]?.text || 'Sorry, email hello@hometend.co.nz' }]);
-    } catch(e) { setMsgs(m => [...m, { role: 'assistant', text: 'Sorry — email hello@hometend.co.nz' }]); }
+    } catch(e) {
+      setMsgs(m => [...m, { role: 'assistant', text: 'Sorry, email hello@hometend.co.nz' }]);
+    }
     setLoading(false);
   };
 
   return (
-    <>
-      {/* Settled widget — appears after entrance animation completes */}
-      {entered && (
-      <div style={{ position: 'fixed', top: reelTop, right: 0, width: 320, height: 330, zIndex: 9999 }}>
+    <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999, display: 'flex', alignItems: 'flex-end' }}>
       {open && (
-        <div style={{ position: 'absolute', top: 0, left: 0, width: 320, background: '#FCFBF8', height: 330, borderRadius: '20px 0 0 0', boxShadow: '-4px -8px 40px rgba(38,48,42,0.18)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', zIndex: 2 }}>
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '14px 14px 8px' }}>
+        <div style={{ width: 300, height: 380, background: '#FCFBF8', borderRadius: '16px 0 0 0', boxShadow: '-4px -4px 24px rgba(0,0,0,0.15)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
             {msgs.map((m, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
-                <div style={{ maxWidth: '84%', padding: '9px 13px', borderRadius: m.role === 'user' ? '14px 14px 3px 14px' : '14px 14px 14px 3px', background: m.role === 'user' ? '#1A3A6E' : '#EDE8E0', color: m.role === 'user' ? 'white' : '#26302A', fontSize: 13, lineHeight: 1.55 }}>{m.text}</div>
+              <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 8 }}>
+                <div style={{ maxWidth: '85%', padding: '8px 12px', borderRadius: 12, background: m.role === 'user' ? '#1A3A6E' : '#EDE8E0', color: m.role === 'user' ? 'white' : '#26302A', fontSize: 13, lineHeight: 1.5 }}>{m.text}</div>
               </div>
             ))}
-            {loading && (
-              <div style={{ display: 'flex', gap: 4, padding: '4px 8px' }}>
-                {[0,1,2].map(i => <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: '#B5603F' }}/>)}
-              </div>
-            )}
-            <div ref={endRef}/>
+            {loading && <div style={{ fontSize: 12, color: '#B5603F', padding: '4px 8px' }}>Typing...</div>}
+            <div ref={endRef} />
           </div>
-          <div style={{ padding: '8px 10px 12px', borderTop: '1px solid #D9D2C2', display: 'flex', gap: 6, flexShrink: 0 }}>
+          <div style={{ padding: '8px', borderTop: '1px solid #D9D2C2', display: 'flex', gap: 6 }}>
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && send()}
-              placeholder="Ask the HomeTend team..."
-              style={{ flex: 1, border: '1.5px solid #D9D2C2', borderRadius: 999, padding: '8px 13px', fontSize: 13, fontFamily: 'Inter,sans-serif', outline: 'none', background: '#FCFBF8', color: '#26302A' }}
+              placeholder="Ask Luke anything..."
+              style={{ flex: 1, border: '1.5px solid #D9D2C2', borderRadius: 20, padding: '7px 12px', fontSize: 13, outline: 'none', fontFamily: 'sans-serif' }}
             />
-            <button onClick={send} disabled={loading || !input.trim()} style={{ background: '#B5603F', border: 'none', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: loading || !input.trim() ? 0.4 : 1 }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
-            </button>
+            <button onClick={send} disabled={loading || !input.trim()} style={{ background: '#B5603F', border: 'none', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', color: 'white', fontSize: 16, opacity: loading || !input.trim() ? 0.4 : 1 }}>→</button>
           </div>
         </div>
       )}
-      <div style={{ position: 'relative', zIndex: 1, width: 320, height: 330, display: 'flex', flexDirection: 'column' }}>
-        <img
-          src={FINN_IMAGE}
-          alt=""
-          onClick={() => setOpen(o => !o)}
-          style={{ width: 320, height: 290, objectFit: 'cover', objectPosition: 'top center', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))' }}
-        />
-        <div
-          onClick={() => setOpen(o => !o)}
-          style={{ width: 320, height: 40, flexShrink: 0, background: '#1A3A6E', padding: '0 16px', cursor: 'pointer', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-        >
-          <div style={{ color: 'white', fontSize: 14, fontWeight: 700 }}>Luke — HomeTend Assistant</div>
-          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>{open ? 'Click to close ↓' : 'Ask us anything ↑'}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }} onClick={() => setOpen(o => !o)}>
+        <img src={FINN_IMAGE} alt="" style={{ width: 200, display: 'block', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))' }} />
+        <div style={{ width: 200, background: '#1A3A6E', padding: '10px', textAlign: 'center' }}>
+          <div style={{ color: 'white', fontSize: 13, fontWeight: 700 }}>Luke — HomeTend Assistant</div>
+          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>{open ? 'Click to close' : 'Ask us anything'}</div>
         </div>
       </div>
     </div>
-      )}
-    </>
   );
 }
 

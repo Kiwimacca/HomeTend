@@ -1070,15 +1070,13 @@ function FinnCharacter() {
           </div>
         </div>
       )}
-      <div style={{ position: 'relative', zIndex: 1, width: 320, height: 330, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
-          <img
-            src={FINN_IMAGE}
-            alt=""
-            onClick={() => setOpen(o => !o)}
-            style={{ width: 320, height: 'auto', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))' }}
-          />
-        </div>
+      <div style={{ position: 'relative', zIndex: 1, width: 320, height: 330, display: 'flex', flexDirection: 'column' }}>
+        <img
+          src={FINN_IMAGE}
+          alt=""
+          onClick={() => setOpen(o => !o)}
+          style={{ width: 320, height: 290, objectFit: 'cover', objectPosition: 'top center', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))' }}
+        />
         <div
           onClick={() => setOpen(o => !o)}
           style={{ width: 320, height: 40, flexShrink: 0, background: '#1A3A6E', padding: '0 16px', cursor: 'pointer', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
@@ -1253,15 +1251,6 @@ export default function App() {
           pointer-events: none;
         }
         .nav-git-btn-shine.on { background: rgba(255,255,255,0.35); }
-          background: var(--ink);
-          color: var(--paper);
-          padding: 10px 22px;
-          border-radius: 999px;
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          border: none;
-        }
 
         /* HERO */
         .hero {

@@ -1006,10 +1006,10 @@ function FinnCharacter() {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 9999, display: 'flex', alignItems: 'flex-end' }}>
+    <div style={{ width: 200, flexShrink: 0, alignSelf: 'stretch', position: 'relative', display: 'flex', flexDirection: 'column' }}>
       {open && (
-        <div style={{ width: 300, height: 380, background: '#FCFBF8', borderRadius: '16px 0 0 0', boxShadow: '-4px -4px 24px rgba(0,0,0,0.15)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
+        <div style={{ position: 'absolute', right: '100%', top: 0, bottom: 0, width: 300, background: '#FCFBF8', borderRadius: '16px 0 0 0', boxShadow: '-4px -4px 24px rgba(0,0,0,0.15)', border: '1px solid #D9D2C2', borderRight: 'none', borderBottom: 'none', display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 10 }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px' }}>
             {msgs.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 8 }}>
                 <div style={{ maxWidth: '85%', padding: '8px 12px', borderRadius: 12, background: m.role === 'user' ? '#1A3A6E' : '#EDE8E0', color: m.role === 'user' ? 'white' : '#26302A', fontSize: 13, lineHeight: 1.5 }}>{m.text}</div>
@@ -1018,7 +1018,7 @@ function FinnCharacter() {
             {loading && <div style={{ fontSize: 12, color: '#B5603F', padding: '4px 8px' }}>Typing...</div>}
             <div ref={endRef} />
           </div>
-          <div style={{ padding: '8px', borderTop: '1px solid #D9D2C2', display: 'flex', gap: 6 }}>
+          <div style={{ padding: '8px', borderTop: '1px solid #D9D2C2', display: 'flex', gap: 6, flexShrink: 0 }}>
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -1030,12 +1030,10 @@ function FinnCharacter() {
           </div>
         </div>
       )}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }} onClick={() => setOpen(o => !o)}>
-        <img src={FINN_IMAGE} alt="" style={{ width: 200, display: 'block', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))' }} />
-        <div style={{ width: 200, background: '#1A3A6E', padding: '10px', textAlign: 'center' }}>
-          <div style={{ color: 'white', fontSize: 13, fontWeight: 700 }}>Luke — HomeTend Assistant</div>
-          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>{open ? 'Click to close' : 'Ask us anything'}</div>
-        </div>
+      <img src={FINN_IMAGE} alt="" onClick={() => setOpen(o => !o)} style={{ width: 200, flex: 1, objectFit: 'cover', objectPosition: 'top center', display: 'block', cursor: 'pointer', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))' }} />
+      <div onClick={() => setOpen(o => !o)} style={{ width: 200, flexShrink: 0, background: '#1A3A6E', padding: '10px', textAlign: 'center', cursor: 'pointer' }}>
+        <div style={{ color: 'white', fontSize: 13, fontWeight: 700 }}>Luke — HomeTend Assistant</div>
+        <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>{open ? 'Click to close' : 'Ask us anything'}</div>
       </div>
     </div>
   );
@@ -1956,6 +1954,8 @@ export default function App() {
 
         /* FILM REEL */
         .film-reel-wrap {
+          flex: 1;
+          min-width: 0;
           background: #1A1F1C;
           overflow: hidden;
           border-top: 1px solid #2E3830;
@@ -2705,8 +2705,11 @@ export default function App() {
 
       </section>
 
-      {/* FILM REEL — full width between configurator and tabs */}
-      <FilmReel />
+      {/* FILM REEL + LUKE WIDGET — side by side */}
+      <div style={{ display: 'flex', alignItems: 'stretch' }}>
+        <FilmReel />
+        <FinnCharacter />
+      </div>
 
       {/* TAB PANELS */}
       <div ref={tabPanelRef}>
@@ -2882,7 +2885,6 @@ export default function App() {
         </div>
       )}
 
-      <FinnCharacter />
     </div>
   );
 }

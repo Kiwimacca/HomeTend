@@ -1524,6 +1524,7 @@ export default function App() {
         }
         .fold-pane-hero {
           border-right: 1px solid var(--line);
+          padding-top: 7px;
         }
         .fold-pane-services {
           border-right: 1px solid var(--line);
@@ -1567,7 +1568,7 @@ export default function App() {
         .fold-headline {
           font-size: clamp(17px, 2vw, 26px);
           line-height: 1.1;
-          margin: 0 0 24px;
+          margin: 0 0 18px;
         }
         .fold-headline em {
           font-style: italic;

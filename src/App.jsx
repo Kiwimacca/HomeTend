@@ -16,25 +16,32 @@ const FREQUENCIES = [
 const SERVICES = [
   { id: 'house-wash', name: 'House Wash', angle: 0, maxFrequency: 'twice-yearly',
     description: 'Full exterior pressure wash — weatherboards, cladding, fascia and soffits. Removes pollen, mould, algae and road grime before it stains or degrades your surfaces.',
-    why: 'Most Christchurch homes need this at least once a year. Left untreated, mould works into the paintwork — and most external paint warranties are voided where regular washing has been overlooked.' },
-  { id: 'roof', name: 'Roof Wash & Mould Removal', angle: 45, maxFrequency: 'twice-yearly',
-    description: 'High-pressure wash combined with moss and mould treatment. Clears lichen and biological growth that traps moisture against your roofing material.',
-    why: 'Lichen and mould take years off the lifecycle of your roof. A clean roof lasts decades longer — and the cost of replacement makes this one of the smartest maintenance calls you can make.' },
+    why: 'Most Christchurch homes need this at least once a year. Left untreated, mould works into the paintwork — and most external paint warranties are voided where regular washing has been overlooked.',
+    marketRate: 'One-off in Christchurch: $250 – $950+' },
+  { id: 'roof', name: 'Roof Treatment', angle: 45, maxFrequency: 'twice-yearly',
+    description: 'As an alternative to manual roof washing, your home may be eligible for roof treatment. We spray a specially formulated product designed to kill moss, mould and lichen onto the roof surface. Over the next 12 months, rain, sun and wind gradually break down and wash away the dead growth — leaving the roof looking fresh and clean.',
+    why: 'Lichen and mould take years off the lifecycle of your roof. Roof treatment is suitable for corrugated iron, COLORSTEEL, decromastic tile, pressed-metal tile, concrete tile, slate, terracotta, butynol and cedar shingle roofs. No safety harness rigging fee in most cases — we generally do not need to climb onto the roof. Note: not suitable for homes on tank water.',
+    marketRate: 'One-off in Christchurch: $300 – $750+' },
   { id: 'gutter', name: 'Gutter Clean', angle: 90, maxFrequency: 'twice-yearly',
     description: 'Full clear-out of leaves and debris from gutters and downpipes, checked for correct flow and drainage.',
-    why: 'One blocked downpipe in a Christchurch storm can push water into your walls, subfloor or foundation. The repair bill starts at $5,000. The gutter clean costs a fraction of that.' },
+    why: 'One blocked downpipe in a Christchurch storm can push water into your walls, subfloor or foundation. The repair bill starts at $5,000. The gutter clean costs a fraction of that.',
+    marketRate: 'One-off in Christchurch: $150 – $300+' },
   { id: 'windows', name: 'Window Clean', angle: 135, maxFrequency: 'quarterly',
     description: 'Full exterior clean of all windows, frames and sills — including upper-storey windows. The clean that actually happens on schedule, without you having to organise it.',
-    why: 'Many joinery manufacturers void warranties where bi-annual washing of extrusions has been missed. Clean windows also let in significantly more light through a Christchurch winter.' },
+    why: 'Many joinery manufacturers void warranties where bi-annual washing of extrusions has been missed. Clean windows also let in significantly more light through a Christchurch winter.',
+    marketRate: 'One-off in Christchurch: $150 – $300+' },
   { id: 'driveway', name: 'Driveway Clean', angle: 180, maxFrequency: 'twice-yearly',
     description: 'High-pressure wash of concrete or paved surfaces. Removes oil stains, moss and algae that make driveways slippery and unsightly.',
-    why: 'Algae on concrete becomes a slip hazard fast. Oil stains oxidise and become permanent within months. A clean driveway adds measurable kerb appeal — and matters if you ever sell.' },
+    why: 'Algae on concrete becomes a slip hazard fast. Oil stains oxidise and become permanent within months. A clean driveway adds measurable kerb appeal — and matters if you ever sell.',
+    marketRate: 'One-off in Christchurch: $150 – $350' },
   { id: 'hvac', name: 'Heat Pump Servicing', angle: 225, maxFrequency: 'quarterly',
     description: 'Filter clean and replacement, coil inspection, refrigerant check, electrical safety check and performance test across all your indoor units.',
-    why: 'Add years to the lifecycle of your heat pump with regular servicing. Quarterly is recommended — air quality, seasonal preparation and functional output all depend on it. A dirty filter makes your unit work 15–20% harder, and that shows up on your power bill every month.' },
+    why: 'Add years to the lifecycle of your heat pump with regular servicing. Quarterly is recommended — air quality, seasonal preparation and functional output all depend on it. A dirty filter makes your unit work 15–20% harder, and that shows up on your power bill every month.',
+    marketRate: 'One-off in Christchurch: $200 – $400+ ($150 per additional unit depending on service level)' },
   { id: 'spider', name: 'Away with Spiders and Flies', angle: 315, maxFrequency: 'twice-yearly',
     description: 'Treatment of eaves, window frames, corners and under-deck areas with a residual deterrent that keeps spiders and flies outside where they belong.',
-    why: 'Treat the outside and control the inside. Say no more?' },
+    why: 'Treat the outside and control the inside. Say no more?',
+    marketRate: 'One-off in Christchurch: $150 – $350' },
 ];
 
 function allowedFrequencies(serviceId) {
@@ -2877,7 +2884,12 @@ export default function App() {
             <button className="modal-close" onClick={() => setServiceInfo(null)}>✕</button>
             <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 500, marginBottom: 14, paddingRight: 32, color: '#26302A' }}>{serviceInfo.name}</h2>
             <p style={{ fontSize: 15, lineHeight: 1.65, color: '#26302A', marginBottom: 16 }}>{serviceInfo.description}</p>
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: '#5A5A52', fontStyle: 'italic' }}>{serviceInfo.why}</p>
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: '#5A5A52', fontStyle: 'italic', marginBottom: 16 }}>{serviceInfo.why}</p>
+            {serviceInfo.marketRate && (
+              <p style={{ fontSize: 12, lineHeight: 1.5, color: '#B5603F', fontWeight: 600, borderTop: '1px solid #EEE', paddingTop: 12, marginTop: 4 }}>
+                Market comparison — {serviceInfo.marketRate}
+              </p>
+            )}
           </div>
         </div>
       )}

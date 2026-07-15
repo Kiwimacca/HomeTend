@@ -2655,7 +2655,7 @@ export default function App() {
         {/* Pane 1: Headline + property inputs */}
         <div className="fold-pane fold-pane-hero">
           <h1 className="fold-headline">Your home is your biggest<br/>asset, <em>let us tend to your<br/>maintenance needs.</em></h1>
-          <p style={{ fontSize: 14, color: '#4A5048', lineHeight: 1.6, marginTop: 8, marginBottom: 20 }}>Maintaining your home has never been easier. Choose your services bundle, pay 50% now and spread the rest across easy monthly payments.</p>
+          <p style={{ fontSize: 14, color: '#4A5048', lineHeight: 1.6, marginTop: 8, marginBottom: 20 }}>Maintaining your home has never been easier. Choose your services, pay 50% now and spread the rest across easy monthly payments.</p>
           <div className="fold-step-heading">Step 1 — Your house size</div>
           <div className="fold-inputs">
             <div className="fold-input-group">

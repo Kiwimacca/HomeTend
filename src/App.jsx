@@ -1062,6 +1062,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [serviceInfo, setServiceInfo] = useState(null);
   const [frequencyByService, setFrequencyByService] = useState({
     'house-wash': 'annual',
   });
@@ -1645,6 +1646,25 @@ export default function App() {
           font-weight: 500;
           color: var(--ink);
         }
+        .svc-info-btn {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          border: 1.5px solid var(--clay);
+          background: none;
+          color: var(--clay);
+          font-size: 11px;
+          font-weight: 700;
+          cursor: pointer;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: auto;
+          line-height: 1;
+          transition: background 0.15s, color 0.15s;
+        }
+        .svc-info-btn:hover { background: var(--clay); color: white; }
         .fold-service-desc {
           font-size: 11.5px;
           color: #5A5A52;
@@ -2172,6 +2192,16 @@ export default function App() {
           align-items: center;
           justify-content: center;
         }
+        .service-info-sheet {
+          background: white;
+          border-radius: 16px;
+          width: 100%;
+          max-width: 400px;
+          position: relative;
+          box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+          padding: 28px 28px 24px;
+          align-self: center;
+        }
         .modal-steps {
           display: flex;
           gap: 0;
@@ -2671,6 +2701,7 @@ export default function App() {
                         ))}
                       </div>
                     )}
+                    <button type="button" className="svc-info-btn" onClick={e => { e.stopPropagation(); setServiceInfo(s); }}>?</button>
                   </div>
                   {isActive && (
                     <div className="fold-freq-pills">
@@ -2681,12 +2712,6 @@ export default function App() {
                         >{f.label}</button>
                       ))}
                     </div>
-                  )}
-                  {isActive && (
-                    <>
-                      <p className="fold-service-desc">{s.description}</p>
-                      <p className="fold-service-why">{s.why}</p>
-                    </>
                   )}
                 </div>
               );
@@ -2845,6 +2870,17 @@ export default function App() {
         <span>HomeTend. © 2026</span>
         <span>Christchurch, NZ</span>
       </footer>
+
+      {serviceInfo && (
+        <div className="modal-backdrop" onClick={() => setServiceInfo(null)}>
+          <div className="service-info-sheet" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setServiceInfo(null)}>✕</button>
+            <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 500, marginBottom: 14, paddingRight: 32, color: '#26302A' }}>{serviceInfo.name}</h2>
+            <p style={{ fontSize: 15, lineHeight: 1.65, color: '#26302A', marginBottom: 16 }}>{serviceInfo.description}</p>
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: '#5A5A52', fontStyle: 'italic' }}>{serviceInfo.why}</p>
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <SignupModal

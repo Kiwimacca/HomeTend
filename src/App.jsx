@@ -14,13 +14,27 @@ const FREQUENCIES = [
 ];
 
 const SERVICES = [
-  { id: 'house-wash', name: 'House Wash', why: 'Pollen and grime build through the warmer months — washed off before it sets in.', angle: 0, maxFrequency: 'twice-yearly' },
-  { id: 'roof', name: 'Roof Wash & Mould Removal', why: 'Cleared before winter rain drives moss and mould deeper in.', angle: 45, maxFrequency: 'twice-yearly' },
-  { id: 'gutter', name: 'Gutter Clean', why: 'Cleared before the storms hit, so water has somewhere to go.', angle: 90, maxFrequency: 'twice-yearly' },
-  { id: 'windows', name: 'Window Clean', why: 'The clean that actually happens, on schedule, without you doing it.', angle: 135, maxFrequency: 'quarterly' },
-  { id: 'driveway', name: 'Driveway Clean', why: 'Oil, moss and stains lifted before they set into the concrete.', angle: 180, maxFrequency: 'twice-yearly' },
-  { id: 'hvac', name: 'HVAC Maintenance', why: 'Checked and filtered regularly so it never has to work harder than it should.', angle: 225, maxFrequency: 'quarterly' },
-  { id: 'spider', name: 'Spider Control', why: 'Treated before they move in for the warmer months — eaves, corners, window frames.', angle: 315, maxFrequency: 'twice-yearly' },
+  { id: 'house-wash', name: 'House Wash', angle: 0, maxFrequency: 'twice-yearly',
+    description: 'Full exterior pressure wash — weatherboards, cladding, fascia and soffits. Removes pollen, mould, algae and road grime before it stains or degrades your surfaces.',
+    why: 'Most Christchurch homes need this at least once a year. Left untreated, mould works into the paintwork — and most external paint warranties are voided where regular washing has been overlooked.' },
+  { id: 'roof', name: 'Roof Wash & Mould Removal', angle: 45, maxFrequency: 'twice-yearly',
+    description: 'High-pressure wash combined with moss and mould treatment. Clears lichen and biological growth that traps moisture against your roofing material.',
+    why: 'Lichen and mould take years off the lifecycle of your roof. A clean roof lasts decades longer — and the cost of replacement makes this one of the smartest maintenance calls you can make.' },
+  { id: 'gutter', name: 'Gutter Clean', angle: 90, maxFrequency: 'twice-yearly',
+    description: 'Full clear-out of leaves and debris from gutters and downpipes, checked for correct flow and drainage.',
+    why: 'One blocked downpipe in a Christchurch storm can push water into your walls, subfloor or foundation. The repair bill starts at $5,000. The gutter clean costs a fraction of that.' },
+  { id: 'windows', name: 'Window Clean', angle: 135, maxFrequency: 'quarterly',
+    description: 'Full exterior clean of all windows, frames and sills — including upper-storey windows. The clean that actually happens on schedule, without you having to organise it.',
+    why: 'Many joinery manufacturers void warranties where bi-annual washing of extrusions has been missed. Clean windows also let in significantly more light through a Christchurch winter.' },
+  { id: 'driveway', name: 'Driveway Clean', angle: 180, maxFrequency: 'twice-yearly',
+    description: 'High-pressure wash of concrete or paved surfaces. Removes oil stains, moss and algae that make driveways slippery and unsightly.',
+    why: 'Algae on concrete becomes a slip hazard fast. Oil stains oxidise and become permanent within months. A clean driveway adds measurable kerb appeal — and matters if you ever sell.' },
+  { id: 'hvac', name: 'Heat Pump Servicing', angle: 225, maxFrequency: 'quarterly',
+    description: 'Filter clean and replacement, coil inspection, refrigerant check, electrical safety check and performance test across all your indoor units.',
+    why: 'Add years to the lifecycle of your heat pump with regular servicing. Quarterly is recommended — air quality, seasonal preparation and functional output all depend on it. A dirty filter makes your unit work 15–20% harder, and that shows up on your power bill every month.' },
+  { id: 'spider', name: 'Away with Spiders and Flies', angle: 315, maxFrequency: 'twice-yearly',
+    description: 'Treatment of eaves, window frames, corners and under-deck areas with a residual deterrent that keeps spiders and flies outside where they belong.',
+    why: 'Treat the outside and control the inside. Say no more?' },
 ];
 
 function allowedFrequencies(serviceId) {
@@ -223,7 +237,7 @@ function SeasonalWheel() {
               <>
                 <span className="wheel-detail-season" style={{ color: seasonColor[s.season] }}>{s.season} · {s.cadence}</span>
                 <h3>{s.name}</h3>
-                <p>{s.why}</p>
+                <p>{s.description}</p>
               </>
             );
           })()
@@ -1631,6 +1645,19 @@ export default function App() {
           font-weight: 500;
           color: var(--ink);
         }
+        .fold-service-desc {
+          font-size: 11.5px;
+          color: #5A5A52;
+          line-height: 1.5;
+          margin: 4px 0 2px 26px;
+        }
+        .fold-service-why {
+          font-size: 11px;
+          color: #8A8576;
+          font-style: italic;
+          line-height: 1.45;
+          margin: 0 0 4px 26px;
+        }
         .fold-freq-pills {
           display: flex;
           gap: 4px;
@@ -2654,6 +2681,12 @@ export default function App() {
                         >{f.label}</button>
                       ))}
                     </div>
+                  )}
+                  {isActive && (
+                    <>
+                      <p className="fold-service-desc">{s.description}</p>
+                      <p className="fold-service-why">{s.why}</p>
+                    </>
                   )}
                 </div>
               );
